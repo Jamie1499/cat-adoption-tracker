@@ -27,4 +27,4 @@ jobs:
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
-        run: cat-scrapper.py
+        run: python cat-scrapper.py
