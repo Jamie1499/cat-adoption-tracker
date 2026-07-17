@@ -28,3 +28,13 @@ jobs:
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
         run: python cat-scrapper.py
+        
+      - name: Commit JSON files
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add *.json
+          git commit -m "Update cat JSON files" || echo "No changes to commit"
+          git push
+
+  
