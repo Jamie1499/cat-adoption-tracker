@@ -1,42 +1,35 @@
-name: Blue Cross Cat Tracker
+name: BlueCross Cat Tracker
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "0 * * * *"   # every hour
   workflow_dispatch:
 
 jobs:
-  track-bluecross:
+  run:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: |
-          pip install feedparser requests
+        run: pip install -r requirements.txt
 
-      - name: Run Blue Cross tracker
+      - name: Run tracker
         env:
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
-        run: python bluecross-tracker.py
+        run: python bluecross_tracker.py
 
-      - name: Commit JSON file
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add bluecross_cats.json || echo "No JSON to add"
-          git commit -m "Update Blue Cross cats" || echo "No changes"
-          git push
+      - name: Upload debug HTML
+        uses: actions/upload-artifact@v3
+        with:
+          name: debug-html
+          path: debug.html
