@@ -2,7 +2,8 @@ import os
 import json
 import smtplib
 from email.mime.text import MIMEText
-import feedparser
+import cloudscraper
+from bs4 import BeautifulSoup
 
 FILE = "bluecross_cats.json"
 
@@ -10,6 +11,8 @@ EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
 EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
+
+URL = "https://www.bluecross.org.uk/adopt/cat"
 
 
 def load_previous():
@@ -24,16 +27,56 @@ def save_current(cats):
         json.dump(cats, f, indent=2)
 
 
-def scrape_bluecross_rss():
-    feed = feedparser.parse("https://www.bluecross.org.uk/rss/pets/cat")
+def scrape_bluecross():
+    scraper = cloudscraper.create_scraper(
+        browser={
+            "browser": "chrome",
+            "platform": "windows",
+            "mobile": False
+        }
+    )
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/123.0.0.0 Safari/537.36"
+        ),
+        "Accept-Language": "en-GB,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml"
+    }
+
+    html = scraper.get(URL, headers=headers).text
+
+    # Debugging: save raw HTML so you can inspect it in GitHub Actions
+    with open("debug.html", "w", encoding="utf-8") as f:
+        f.write(html)
+
+    soup = BeautifulSoup(html, "html.parser")
 
     cats = []
-    for entry in feed.entries:
+    items = soup.select(".views-row")
+
+    for item in items:
+        name_el = item.select_one(".field--name-title")
+        link_el = item.select_one("a")
+
+        if not name_el or not link_el:
+            continue
+
+        name = name_el.get_text(strip=True)
+        link = link_el["href"]
+
+        # Ensure full URL
+        if link.startswith("/"):
+            link = "https://www.bluecross.org.uk" + link
+
         cats.append({
-            "name": entry.title,
-            "url": entry.link,
+            "name": name,
+            "url": link,
             "shelter": "Blue Cross"
         })
+
     return cats
 
 
@@ -62,11 +105,10 @@ def send_email(new_cats):
 def main():
     print("Starting Blue Cross tracker…")
 
-    current = scrape_bluecross_rss()
+    current = scrape_bluecross()
     previous = load_previous()
 
     prev_urls = {c["url"] for c in previous}
-
     new_cats = [c for c in current if c["url"] not in prev_urls]
 
     print(f"Total new cats: {len(new_cats)}")
