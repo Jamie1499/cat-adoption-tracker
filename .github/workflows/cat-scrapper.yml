@@ -1,4 +1,4 @@
-name: Cat Adoption Tracker
+name: Blue Cross Cat Tracker
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  track-cats:
+  track-bluecross:
     runs-on: ubuntu-latest
 
     permissions:
@@ -21,26 +21,22 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: |
-          pip install playwright requests
+          pip install feedparser requests
 
-      - name: Install Playwright browsers + system deps
-        run: |
-          npx playwright install --with-deps
-
-      - name: Run cat scraper
+      - name: Run Blue Cross tracker
         env:
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
-        run: python cat-scrapper.py
+        run: python bluecross-tracker.py
 
-      - name: Commit JSON files
+      - name: Commit JSON file
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add *.json || echo "No JSON files to add"
-          git commit -m "Update cat JSON files" || echo "No changes to commit"
+          git add bluecross_cats.json || echo "No JSON to add"
+          git commit -m "Update Blue Cross cats" || echo "No changes"
           git push
