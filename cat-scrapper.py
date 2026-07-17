@@ -1,95 +1,22 @@
-import requests
-import json
 import os
+import json
 import smtplib
 from email.mime.text import MIMEText
 
-# JSON memory files
+from playwright.sync_api import sync_playwright
+
 FILES = {
     "bluecross": "bluecross_cats.json",
     "battersea": "battersea_cats.json",
     "catsprotection": "catsprotection_cats.json",
-    "rspca": "rspca_cats.json"
+    "rspca": "rspca_cats.json",
 }
 
-# Email credentials
 EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
 EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
 
-
-# -----------------------------
-# API FETCHERS (ADOPTABLE ONLY)
-# -----------------------------
-
-def fetch_bluecross():
-    """Blue Cross adoptable cats."""
-    url = "https://www.bluecross.org.uk/api/pets"
-    r = requests.get(url).json()
-
-    cats = []
-    for pet in r.get("pets", []):
-        if pet.get("species") == "Cat" and pet.get("status") == "Available":
-            cats.append({
-                "name": pet.get("name"),
-                "url": "https://www.bluecross.org.uk" + pet.get("path"),
-                "shelter": "Blue Cross"
-            })
-    return cats
-
-
-def fetch_battersea():
-    """Battersea adoptable cats."""
-    url = "https://www.battersea.org.uk/api/pets?species=cat"
-    r = requests.get(url).json()
-
-    cats = []
-    for pet in r.get("data", []):
-        if pet.get("status") == "Available":
-            cats.append({
-                "name": pet.get("title"),
-                "url": "https://www.battersea.org.uk" + pet.get("url"),
-                "shelter": "Battersea"
-            })
-    return cats
-
-
-def fetch_catsprotection():
-    """Cats Protection UK-wide adoptable cats."""
-    url = "https://www.cats.org.uk/api/animals"
-    r = requests.get(url).json()
-
-    cats = []
-    for pet in r.get("animals", []):
-        if pet.get("species") == "Cat" and pet.get("availability") == "Available":
-            cats.append({
-                "name": pet.get("name"),
-                "url": pet.get("url"),
-                "shelter": "Cats Protection"
-            })
-    return cats
-
-
-def fetch_rspca():
-    """RSPCA UK-wide adoptable cats."""
-    url = "https://www.rspca.org.uk/api/animals"
-    r = requests.get(url).json()
-
-    cats = []
-    for pet in r.get("animals", []):
-        if pet.get("species") == "Cat" and pet.get("available") is True:
-            cats.append({
-                "name": pet.get("name"),
-                "url": pet.get("url"),
-                "shelter": "RSPCA"
-            })
-    return cats
-
-
-# -----------------------------
-# JSON MEMORY HELPERS
-# -----------------------------
 
 def load_previous(path):
     if not os.path.exists(path):
@@ -103,12 +30,97 @@ def save_current(path, cats):
         json.dump(cats, f, indent=2)
 
 
-# -----------------------------
-# EMAIL
-# -----------------------------
+# ---------- SCRAPERS ----------
+
+def scrape_bluecross(page):
+    page.goto("https://www.bluecross.org.uk/pet/cat", wait_until="networkidle")
+    page.wait_for_timeout(3000)
+
+    cats = []
+    cards = page.query_selector_all("article.bc-card")
+    for card in cards:
+        name_el = card.query_selector("h3")
+        link_el = card.query_selector("a")
+        if not name_el or not link_el:
+            continue
+        name = name_el.inner_text().strip()
+        url = link_el.get_attribute("href")
+        if not url.startswith("http"):
+            url = "https://www.bluecross.org.uk" + url
+        cats.append({"name": name, "url": url, "shelter": "Blue Cross"})
+    return cats
+
+
+def scrape_battersea(page):
+    page.goto("https://www.battersea.org.uk/cats/cat-rehoming-gallery", wait_until="networkidle")
+    page.wait_for_timeout(3000)
+
+    cats = []
+    cards = page.query_selector_all(".views-row, .cat-card, article")
+    for card in cards:
+        name_el = card.query_selector("h3, .title, .field--name-title")
+        link_el = card.query_selector("a")
+        if not name_el or not link_el:
+            continue
+        name = name_el.inner_text().strip()
+        url = link_el.get_attribute("href")
+        if not url:
+            continue
+        if not url.startswith("http"):
+            url = "https://www.battersea.org.uk" + url
+        cats.append({"name": name, "url": url, "shelter": "Battersea"})
+    return cats
+
+
+def scrape_catsprotection(page):
+    page.goto("https://www.cats.org.uk/adopt-a-cat", wait_until="networkidle")
+    page.wait_for_timeout(3000)
+
+    cats = []
+    cards = page.query_selector_all(".animal-card, .card, article")
+    for card in cards:
+        name_el = card.query_selector("h3, .animal-name")
+        link_el = card.query_selector("a")
+        if not name_el or not link_el:
+            continue
+        name = name_el.inner_text().strip()
+        url = link_el.get_attribute("href")
+        if not url:
+            continue
+        if not url.startswith("http"):
+            url = "https://www.cats.org.uk" + url
+        cats.append({"name": name, "url": url, "shelter": "Cats Protection"})
+    return cats
+
+
+def scrape_rspca(page):
+    page.goto("https://www.rspca.org.uk/findapet", wait_until="networkidle")
+    page.wait_for_timeout(3000)
+
+    cats = []
+    cards = page.query_selector_all(".animal-card, .result, article")
+    for card in cards:
+        species_el = card.query_selector(".species, .animal-type")
+        if species_el and "cat" not in species_el.inner_text().lower():
+            continue
+
+        name_el = card.query_selector("h3, .animal-name")
+        link_el = card.query_selector("a")
+        if not name_el or not link_el:
+            continue
+        name = name_el.inner_text().strip()
+        url = link_el.get_attribute("href")
+        if not url:
+            continue
+        if not url.startswith("http"):
+            url = "https://www.rspca.org.uk" + url
+        cats.append({"name": name, "url": url, "shelter": "RSPCA"})
+    return cats
+
+
+# ---------- EMAIL ----------
 
 def send_email(new_cats):
-    """Send one email listing all new cats grouped by shelter."""
     if not new_cats:
         print("No new cats — no email sent.")
         return
@@ -137,19 +149,23 @@ def send_email(new_cats):
     print("Email sent.")
 
 
-# -----------------------------
-# MAIN
-# -----------------------------
+# ---------- MAIN ----------
 
 def main():
-    print("Fetching cats…")
+    print("Starting Playwright cat scraper…")
 
-    current = {
-        "bluecross": fetch_bluecross(),
-        "battersea": fetch_battersea(),
-        "catsprotection": fetch_catsprotection(),
-        "rspca": fetch_rspca()
-    }
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        current = {
+            "bluecross": scrape_bluecross(page),
+            "battersea": scrape_battersea(page),
+            "catsprotection": scrape_catsprotection(page),
+            "rspca": scrape_rspca(page),
+        }
+
+        browser.close()
 
     new_cats = []
 
@@ -165,10 +181,10 @@ def main():
 
     print(f"Total new cats: {len(new_cats)}")
 
-    # First run always sends email
+    # First run: always send email so you see it working
     if all(len(load_previous(f)) == 0 for f in FILES.values()):
-        print("First run — sending test email.")
-        send_email(new_cats)
+        print("First run — sending email with all current cats.")
+        send_email(new_cats or sum(current.values(), []))
     else:
         send_email(new_cats)
 
