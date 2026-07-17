@@ -1,118 +1,98 @@
 import requests
-from bs4 import BeautifulSoup
 import json
 import os
 import smtplib
 from email.mime.text import MIMEText
 
-# URLs
-BLUECROSS_URL = "https://www.bluecross.org.uk/pet/cat"
-BATTERSEA_URL = "https://www.battersea.org.uk/cats/cat-rehoming-gallery"
+# JSON memory files
+FILES = {
+    "bluecross": "bluecross_cats.json",
+    "battersea": "battersea_cats.json",
+    "catsprotection": "catsprotection_cats.json",
+    "rspca": "rspca_cats.json"
+}
 
-# Data files
-BLUECROSS_FILE = "bluecross_cats.json"
-BATTERSEA_FILE = "battersea_cats.json"
-
-# Email credentials (GitHub Actions secrets)
+# Email credentials
 EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
 EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
 
 
-def send_email(new_bluecross, new_battersea, forced=False):
-    """Send a single email listing new cats from both shelters to two recipients."""
-    body = ""
-
-    if forced:
-        body += "Test email: forced send to verify setup.\n\n"
-
-    if new_bluecross:
-        body += "New Blue Cross Cats:\n"
-        for c in new_bluecross:
-            body += f"- {c['name']} → {c['url']}\n"
-        body += "\n"
-
-    if new_battersea:
-        body += "New Battersea Cats:\n"
-        for c in new_battersea:
-            body += f"- {c['name']} → {c['url']}\n"
-        body += "\n"
-
-    if not body.strip():
-        body = "No new cats, but sending test email so you know it works."
-
-    msg = MIMEText(body)
-    msg["Subject"] = "New Cats Added (Blue Cross + Battersea)"
-    msg["From"] = EMAIL_FROM
-    msg["To"] = ", ".join([EMAIL_TO_1, EMAIL_TO_2])
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL_FROM, EMAIL_PASS)
-        server.send_message(msg)
-
-
 # -----------------------------
-# Scrapers (updated + working)
+# API FETCHERS (ADOPTABLE ONLY)
 # -----------------------------
 
 def fetch_bluecross():
-    """Scrape Blue Cross cat listings."""
-    print("Scraping Blue Cross…")
-    response = requests.get(BLUECROSS_URL)
-    soup = BeautifulSoup(response.text, "html.parser")
+    """Blue Cross adoptable cats."""
+    url = "https://www.bluecross.org.uk/api/pets"
+    r = requests.get(url).json()
 
     cats = []
-    cards = soup.select("article.pet-card")
-
-    for card in cards:
-        name_tag = card.select_one(".pet-card__title")
-        link_tag = card.select_one("a")
-
-        if not name_tag or not link_tag:
-            continue
-
-        cats.append({
-            "name": name_tag.get_text(strip=True),
-            "url": "https://www.bluecross.org.uk" + link_tag["href"]
-        })
-
-    print(f"Found {len(cats)} Blue Cross cats.")
+    for pet in r.get("pets", []):
+        if pet.get("species") == "Cat" and pet.get("status") == "Available":
+            cats.append({
+                "name": pet.get("name"),
+                "url": "https://www.bluecross.org.uk" + pet.get("path"),
+                "shelter": "Blue Cross"
+            })
     return cats
 
 
 def fetch_battersea():
-    """Scrape Battersea cat listings."""
-    print("Scraping Battersea…")
-    response = requests.get(BATTERSEA_URL)
-    soup = BeautifulSoup(response.text, "html.parser")
+    """Battersea adoptable cats."""
+    url = "https://www.battersea.org.uk/api/pets?species=cat"
+    r = requests.get(url).json()
 
     cats = []
-    cards = soup.select("div.views-row")
+    for pet in r.get("data", []):
+        if pet.get("status") == "Available":
+            cats.append({
+                "name": pet.get("title"),
+                "url": "https://www.battersea.org.uk" + pet.get("url"),
+                "shelter": "Battersea"
+            })
+    return cats
 
-    for card in cards:
-        name_tag = card.select_one(".title")
-        link_tag = card.select_one("a")
 
-        if not name_tag or not link_tag:
-            continue
+def fetch_catsprotection():
+    """Cats Protection UK-wide adoptable cats."""
+    url = "https://www.cats.org.uk/api/animals"
+    r = requests.get(url).json()
 
-        cats.append({
-            "name": name_tag.get_text(strip=True),
-            "url": "https://www.battersea.org.uk" + link_tag["href"]
-        })
+    cats = []
+    for pet in r.get("animals", []):
+        if pet.get("species") == "Cat" and pet.get("availability") == "Available":
+            cats.append({
+                "name": pet.get("name"),
+                "url": pet.get("url"),
+                "shelter": "Cats Protection"
+            })
+    return cats
 
-    print(f"Found {len(cats)} Battersea cats.")
+
+def fetch_rspca():
+    """RSPCA UK-wide adoptable cats."""
+    url = "https://www.rspca.org.uk/api/animals"
+    r = requests.get(url).json()
+
+    cats = []
+    for pet in r.get("animals", []):
+        if pet.get("species") == "Cat" and pet.get("available") is True:
+            cats.append({
+                "name": pet.get("name"),
+                "url": pet.get("url"),
+                "shelter": "RSPCA"
+            })
     return cats
 
 
 # -----------------------------
-# Storage helpers
+# JSON MEMORY HELPERS
 # -----------------------------
 
 def load_previous(path):
     if not os.path.exists(path):
-        print(f"{path} does not exist yet.")
         return []
     with open(path, "r") as f:
         return json.load(f)
@@ -121,50 +101,76 @@ def load_previous(path):
 def save_current(path, cats):
     with open(path, "w") as f:
         json.dump(cats, f, indent=2)
-    print(f"Saved {len(cats)} cats to {path}")
 
 
 # -----------------------------
-# Main
+# EMAIL
+# -----------------------------
+
+def send_email(new_cats):
+    """Send one email listing all new cats grouped by shelter."""
+    if not new_cats:
+        print("No new cats — no email sent.")
+        return
+
+    body = "New Cats Available for Adoption\n\n"
+
+    shelters = {}
+    for cat in new_cats:
+        shelters.setdefault(cat["shelter"], []).append(cat)
+
+    for shelter, cats in shelters.items():
+        body += f"{shelter}:\n"
+        for c in cats:
+            body += f"- {c['name']} → {c['url']}\n"
+        body += "\n"
+
+    msg = MIMEText(body)
+    msg["Subject"] = "New Adoptable Cats Found"
+    msg["From"] = EMAIL_FROM
+    msg["To"] = ", ".join([EMAIL_TO_1, EMAIL_TO_2])
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(EMAIL_FROM, EMAIL_PASS)
+        server.send_message(msg)
+
+    print("Email sent.")
+
+
+# -----------------------------
+# MAIN
 # -----------------------------
 
 def main():
-    print("Starting cat scraper…")
+    print("Fetching cats…")
 
-    # Fetch current cats
-    bc_current = fetch_bluecross()
-    bt_current = fetch_battersea()
+    current = {
+        "bluecross": fetch_bluecross(),
+        "battersea": fetch_battersea(),
+        "catsprotection": fetch_catsprotection(),
+        "rspca": fetch_rspca()
+    }
 
-    # Load previous
-    bc_previous = load_previous(BLUECROSS_FILE)
-    bt_previous = load_previous(BATTERSEA_FILE)
+    new_cats = []
 
-    # Detect new cats
-    bc_old_urls = {c["url"] for c in bc_previous}
-    bt_old_urls = {c["url"] for c in bt_previous}
+    for shelter, cats in current.items():
+        prev = load_previous(FILES[shelter])
+        prev_urls = {c["url"] for c in prev}
 
-    new_bluecross = [c for c in bc_current if c["url"] not in bc_old_urls]
-    new_battersea = [c for c in bt_current if c["url"] not in bt_old_urls]
+        for cat in cats:
+            if cat["url"] not in prev_urls:
+                new_cats.append(cat)
 
-    print(f"New Blue Cross cats: {len(new_bluecross)}")
-    print(f"New Battersea cats: {len(new_battersea)}")
+        save_current(FILES[shelter], cats)
 
-    # FORCE EMAIL ON FIRST RUN
-    if not bc_previous and not bt_previous:
-        print("First run detected — forcing test email.")
-        send_email(new_bluecross, new_battersea, forced=True)
+    print(f"Total new cats: {len(new_cats)}")
+
+    # First run always sends email
+    if all(len(load_previous(f)) == 0 for f in FILES.values()):
+        print("First run — sending test email.")
+        send_email(new_cats)
     else:
-        if new_bluecross or new_battersea:
-            print("Sending email with new cats.")
-            send_email(new_bluecross, new_battersea)
-        else:
-            print("No new cats — no email sent.")
-
-    # Save updated lists
-    save_current(BLUECROSS_FILE, bc_current)
-    save_current(BATTERSEA_FILE, bt_current)
-
-    print("Done.")
+        send_email(new_cats)
 
 
 if __name__ == "__main__":
