@@ -21,14 +21,13 @@ jobs:
         with:
           python-version: "3.10"
 
-      # Install Playwright browsers + dependencies
-      - name: Install Playwright
-        uses: microsoft/playwright-github-action@v1
-
-      # Install Python dependencies (requests was missing before)
       - name: Install Python dependencies
         run: |
           pip install playwright requests
+
+      - name: Install Playwright browsers + system deps
+        run: |
+          npx playwright install --with-deps
 
       - name: Run cat scraper
         env:
