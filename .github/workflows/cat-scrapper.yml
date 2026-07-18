@@ -22,18 +22,22 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 lxml
+          pip install requests beautifulsoup4 lxml playwright
+          python -m playwright install --with-deps
 
-      - name: Fetch remote sitemap(s)
+      - name: Fetch sitemaps with Playwright
+        env:
+          URL: "https://www.bluecross.org.uk/sitemap.xml"
+          OUT_DIR: "sitemaps"
+          HEADFUL: "0"
+          NAV_TIMEOUT_MS: "180000"
         run: |
-          mkdir -p sitemaps
-          curl -sSfL "https://www.bluecross.org.uk/sitemap.xml" -o sitemaps/sitemap.xml
-          grep -oP '(?<=<loc>).*?(?=</loc>)' sitemaps/sitemap.xml | grep '\.xml$' || true \
-            | xargs -I{} -n1 -P2 sh -c 'curl -sSfL "{}" -o sitemaps/$(basename "{}")' || true
+          python fetch_all_sitemaps_playwright.py
 
       - name: Run tracker
         env:
-          SITEMAP_FILES: sitemaps/sitemap.xml
+          # point the tracker at all files in sitemaps/ (comma-separated)
+          SITEMAP_FILES: sitemaps/sitemap.xml,sitemaps/sitemap.xml__page_1,sitemaps/sitemap.xml__page_2
           DEBUG: "0"
           SAVE_HTML_SAMPLES: "0"
           NO_EMAIL: "0"                      # set to 1 to disable email
