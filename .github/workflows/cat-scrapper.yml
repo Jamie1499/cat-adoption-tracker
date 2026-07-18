@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests beautifulsoup4 lxml
 
       - name: Run Blue Cross tracker
         env:
@@ -31,6 +31,7 @@ jobs:
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
+          DEBUG: "0"
         run: python bluecross-tracker.py
 
       - name: Commit JSON file
