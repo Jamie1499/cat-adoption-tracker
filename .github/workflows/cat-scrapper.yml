@@ -1,42 +1,60 @@
-name: Blue Cross Cat Tracker (debug)
+name: Run BlueCross tracker
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
 
 jobs:
-  track-bluecross:
+  run-tracker:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install requests beautifulsoup4 lxml
 
-      - name: Run Blue Cross tracker (debug)
+      - name: Fetch remote sitemap(s)
+        run: |
+          mkdir -p sitemaps
+          curl -sSfL "https://www.bluecross.org.uk/sitemap.xml" -o sitemaps/sitemap.xml
+          grep -oP '(?<=<loc>).*?(?=</loc>)' sitemaps/sitemap.xml | grep '\.xml$' || true \
+            | xargs -I{} -n1 -P2 sh -c 'curl -sSfL "{}" -o sitemaps/$(basename "{}")' || true
+
+      - name: Run tracker
         env:
+          SITEMAP_FILES: sitemaps/sitemap.xml
+          DEBUG: "0"
+          SAVE_HTML_SAMPLES: "0"
+          NO_EMAIL: "0"                      # set to 1 to disable email
+          MAX_WORKERS: "6"
+          REQUEST_DELAY: "0.4"
+          USER_AGENT: "github-actions-bluecross-tracker/1.0"
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
-          DEBUG: "1"
-          SAVE_HTML_SAMPLES: "10"
-          FORCE_TEST: "0"
-        run: python bluecross-tracker.py
-
-      - name: Upload debug HTML (optional)
-        if: always()
         run: |
-          echo "Saved debug HTML files (if any) to debug_html/"
-          ls -la debug_html || echo "No debug_html directory"
+          python bluecross-tracker.py
+
+      - name: Commit results if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bluecross_cats.json || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Update bluecross_cats.json (action run)"
+            git push
+          else
+            echo "No changes to commit"
+          fi
