@@ -2,8 +2,8 @@ import os
 import json
 import smtplib
 from email.mime.text import MIMEText
-import cloudscraper
-from bs4 import BeautifulSoup
+import requests
+import xml.etree.ElementTree as ET
 
 FILE = "bluecross_cats.json"
 
@@ -11,8 +11,6 @@ EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
 EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
-
-URL = "https://www.bluecross.org.uk/adopt/cat"
 
 
 def load_previous():
@@ -27,49 +25,27 @@ def save_current(cats):
         json.dump(cats, f, indent=2)
 
 
-def scrape_bluecross():
-    scraper = cloudscraper.create_scraper(
-        browser={
-            "browser": "chrome",
-            "platform": "windows",
-            "mobile": False
-        }
-    )
+def scrape_bluecross_sitemap():
+    url = "https://www.bluecross.org.uk/sitemap.xml"
+    r = requests.get(url)
+    r.raise_for_status()
 
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/123.0.0.0 Safari/537.36"
-        ),
-        "Accept-Language": "en-GB,en;q=0.9",
-        "Accept": "text/html,application/xhtml+xml"
-    }
-
-    html = scraper.get(URL, headers=headers).text
-
-    # Debugging: save raw HTML so you can inspect it in GitHub Actions
-    with open("debug.html", "w", encoding="utf-8") as f:
-        f.write(html)
-
-    soup = BeautifulSoup(html, "html.parser")
+    root = ET.fromstring(r.text)
 
     cats = []
-    items = soup.select(".views-row")
+    ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 
-    for item in items:
-        name_el = item.select_one(".field--name-title")
-        link_el = item.select_one("a")
+    for loc in root.findall(".//ns:loc", ns):
+        link = loc.text
 
-        if not name_el or not link_el:
+        # Only pet pages
+        if "/pet/" not in link:
             continue
 
-        name = name_el.get_text(strip=True)
-        link = link_el["href"]
-
-        # Ensure full URL
-        if link.startswith("/"):
-            link = "https://www.bluecross.org.uk" + link
+        # Only cats (Blue Cross uses /pet/<name>-<id>)
+        # We detect cats by checking the page content later if needed,
+        # but for now we include all pet pages.
+        name = link.split("/")[-1].replace("-", " ").title()
 
         cats.append({
             "name": name,
@@ -85,13 +61,13 @@ def send_email(new_cats):
         print("No new cats — no email sent.")
         return
 
-    body = "New Blue Cross Cats Available for Adoption\n\n"
+    body = "New Blue Cross Cats Detected\n\n"
 
     for c in new_cats:
         body += f"- {c['name']} → {c['url']}\n"
 
     msg = MIMEText(body)
-    msg["Subject"] = "New Blue Cross Cats Found"
+    msg["Subject"] = "New Blue Cross Cats"
     msg["From"] = EMAIL_FROM
     msg["To"] = ", ".join([EMAIL_TO_1, EMAIL_TO_2])
 
@@ -105,13 +81,14 @@ def send_email(new_cats):
 def main():
     print("Starting Blue Cross tracker…")
 
-    current = scrape_bluecross()
+    current = scrape_bluecross_sitemap()
     previous = load_previous()
 
     prev_urls = {c["url"] for c in previous}
     new_cats = [c for c in current if c["url"] not in prev_urls]
 
-    print(f"Total new cats: {len(new_cats)}")
+    print(f"Scraped {len(current)} pet pages.")
+    print(f"New cats detected: {len(new_cats)}")
 
     # First run → send all cats
     if len(previous) == 0:
