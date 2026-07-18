@@ -1,7 +1,7 @@
 [
   {
-    "name": "Angel",
-    "url": "https://www.bluecross.org.uk/pet/angel-2184541",
+    "name": "Arthur",
+    "url": "https://www.bluecross.org.uk/pet/arthur-290769",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -24,16 +24,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Alfie (& Keith)",
-    "url": "https://www.bluecross.org.uk/pet/alfie-keith-2185988",
+    "name": "Angel",
+    "url": "https://www.bluecross.org.uk/pet/angel-2184541",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Arthur",
-    "url": "https://www.bluecross.org.uk/pet/arthur-290769",
+    "name": "Alfie (& Keith)",
+    "url": "https://www.bluecross.org.uk/pet/alfie-keith-2185988",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -72,14 +72,6 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Barry & Beau",
-    "url": "https://www.bluecross.org.uk/pet/barry-beau-2188778",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
     "name": "Basil (& Saffron)",
     "url": "https://www.bluecross.org.uk/pet/basil-saffron-2188901",
     "available": true,
@@ -88,16 +80,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Beau & Barry",
-    "url": "https://www.bluecross.org.uk/pet/beau-barry-2188779",
+    "name": "Barry & Beau",
+    "url": "https://www.bluecross.org.uk/pet/barry-beau-2188778",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Bella",
-    "url": "https://www.bluecross.org.uk/pet/bella-2186997",
+    "name": "Beau & Barry",
+    "url": "https://www.bluecross.org.uk/pet/beau-barry-2188779",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -113,7 +105,7 @@
   },
   {
     "name": "Bella",
-    "url": "https://www.bluecross.org.uk/pet/bella-2184487",
+    "url": "https://www.bluecross.org.uk/pet/bella-2186997",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -128,16 +120,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Biscuit",
-    "url": "https://www.bluecross.org.uk/pet/biscuit-2187910",
+    "name": "Bella",
+    "url": "https://www.bluecross.org.uk/pet/bella-2184487",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Bo Peep",
-    "url": "https://www.bluecross.org.uk/pet/bo-peep-2188929",
+    "name": "Biscuit",
+    "url": "https://www.bluecross.org.uk/pet/biscuit-2187910",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -152,8 +144,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Bonnie",
-    "url": "https://www.bluecross.org.uk/pet/bonnie-2188928",
+    "name": "Bo Peep",
+    "url": "https://www.bluecross.org.uk/pet/bo-peep-2188929",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -168,16 +160,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Bubbles",
-    "url": "https://www.bluecross.org.uk/pet/bubbles-2183013",
+    "name": "Bonnie",
+    "url": "https://www.bluecross.org.uk/pet/bonnie-2188928",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Cabbage & Ham",
-    "url": "https://www.bluecross.org.uk/pet/cabbage-ham-2184608",
+    "name": "Bubbles",
+    "url": "https://www.bluecross.org.uk/pet/bubbles-2183013",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -200,6 +192,14 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Cabbage & Ham",
+    "url": "https://www.bluecross.org.uk/pet/cabbage-ham-2184608",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Chestnut",
     "url": "https://www.bluecross.org.uk/pet/chestnut-2130701",
     "available": true,
@@ -216,14 +216,6 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Chloe",
-    "url": "https://www.bluecross.org.uk/pet/chloe-2183029",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
     "name": "Chive",
     "url": "https://www.bluecross.org.uk/pet/chive-2183506",
     "available": true,
@@ -232,16 +224,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Cookie",
-    "url": "https://www.bluecross.org.uk/pet/cookie-2187592",
+    "name": "Chloe",
+    "url": "https://www.bluecross.org.uk/pet/chloe-2183029",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Crumpet",
-    "url": "https://www.bluecross.org.uk/pet/crumpet-2184625",
+    "name": "Cookie",
+    "url": "https://www.bluecross.org.uk/pet/cookie-2187592",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -257,7 +249,15 @@
   },
   {
     "name": "Daisy",
-    "url": "https://www.bluecross.org.uk/pet/daisy-2188221",
+    "url": "https://www.bluecross.org.uk/pet/daisy-2188509",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Crumpet",
+    "url": "https://www.bluecross.org.uk/pet/crumpet-2184625",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -265,7 +265,7 @@
   },
   {
     "name": "Daisy",
-    "url": "https://www.bluecross.org.uk/pet/daisy-2188509",
+    "url": "https://www.bluecross.org.uk/pet/daisy-2188221",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -280,16 +280,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Dusty",
-    "url": "https://www.bluecross.org.uk/pet/dusty-2185517",
+    "name": "Edward",
+    "url": "https://www.bluecross.org.uk/pet/edward-2188309",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Edward",
-    "url": "https://www.bluecross.org.uk/pet/edward-2188309",
+    "name": "Dusty",
+    "url": "https://www.bluecross.org.uk/pet/dusty-2185517",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -312,16 +312,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Finn",
-    "url": "https://www.bluecross.org.uk/pet/finn-2185545",
+    "name": "Flash",
+    "url": "https://www.bluecross.org.uk/pet/flash-2188041",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Flash",
-    "url": "https://www.bluecross.org.uk/pet/flash-2188041",
+    "name": "Finn",
+    "url": "https://www.bluecross.org.uk/pet/finn-2185545",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -368,6 +368,14 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Guinness",
+    "url": "https://www.bluecross.org.uk/pet/guinness-2188300",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Graham",
     "url": "https://www.bluecross.org.uk/pet/graham-2186930",
     "available": true,
@@ -392,14 +400,6 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Guinness",
-    "url": "https://www.bluecross.org.uk/pet/guinness-2188300",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
     "name": "Ham & Cabbage",
     "url": "https://www.bluecross.org.uk/pet/ham-cabbage-2184610",
     "available": true,
@@ -416,16 +416,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Honey",
-    "url": "https://www.bluecross.org.uk/pet/honey-2188459",
+    "name": "Howard",
+    "url": "https://www.bluecross.org.uk/pet/howard-2189075",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Howard",
-    "url": "https://www.bluecross.org.uk/pet/howard-2189075",
+    "name": "Honey",
+    "url": "https://www.bluecross.org.uk/pet/honey-2188459",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -440,8 +440,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Jeffery",
-    "url": "https://www.bluecross.org.uk/pet/jeffery-2188044",
+    "name": "Jason",
+    "url": "https://www.bluecross.org.uk/pet/jason-2189073",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -456,8 +456,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Jason",
-    "url": "https://www.bluecross.org.uk/pet/jason-2189073",
+    "name": "Jeffery",
+    "url": "https://www.bluecross.org.uk/pet/jeffery-2188044",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -472,8 +472,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Keith (& Alfie)",
-    "url": "https://www.bluecross.org.uk/pet/keith-alfie-2185987",
+    "name": "Julie",
+    "url": "https://www.bluecross.org.uk/pet/julie-2183041",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -488,8 +488,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Julie",
-    "url": "https://www.bluecross.org.uk/pet/julie-2183041",
+    "name": "Keith (& Alfie)",
+    "url": "https://www.bluecross.org.uk/pet/keith-alfie-2185987",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -504,16 +504,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Leah",
-    "url": "https://www.bluecross.org.uk/pet/leah-2187887",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Leo",
-    "url": "https://www.bluecross.org.uk/pet/leo-2187931",
+    "name": "Layla (with Lucky)",
+    "url": "https://www.bluecross.org.uk/pet/layla-with-lucky-2186516",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -528,8 +520,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Layla (with Lucky)",
-    "url": "https://www.bluecross.org.uk/pet/layla-with-lucky-2186516",
+    "name": "Leo",
+    "url": "https://www.bluecross.org.uk/pet/leo-2187931",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Leah",
+    "url": "https://www.bluecross.org.uk/pet/leah-2187887",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -544,16 +544,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Lionel",
-    "url": "https://www.bluecross.org.uk/pet/lionel-2187460",
+    "name": "Lucky",
+    "url": "https://www.bluecross.org.uk/pet/lucky-2186313",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Lucky",
-    "url": "https://www.bluecross.org.uk/pet/lucky-2186313",
+    "name": "Lionel",
+    "url": "https://www.bluecross.org.uk/pet/lionel-2187460",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -600,16 +600,24 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Millie",
-    "url": "https://www.bluecross.org.uk/pet/millie-2175313",
+    "name": "Mimi",
+    "url": "https://www.bluecross.org.uk/pet/mimi-2178325",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Mimi",
-    "url": "https://www.bluecross.org.uk/pet/mimi-2178325",
+    "name": "Miso",
+    "url": "https://www.bluecross.org.uk/pet/miso-2186728",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Millie",
+    "url": "https://www.bluecross.org.uk/pet/millie-2175313",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -632,8 +640,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Miso",
-    "url": "https://www.bluecross.org.uk/pet/miso-2186728",
+    "name": "Misty (and The Weather Kittens)",
+    "url": "https://www.bluecross.org.uk/pet/misty-and-the-weather-kittens-2186586",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -642,14 +650,6 @@
   {
     "name": "Misty",
     "url": "https://www.bluecross.org.uk/pet/misty-2186434",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Misty (and The Weather Kittens)",
-    "url": "https://www.bluecross.org.uk/pet/misty-and-the-weather-kittens-2186586",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -672,6 +672,14 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Neeno",
+    "url": "https://www.bluecross.org.uk/pet/neeno-2188729",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Nessa",
     "url": "https://www.bluecross.org.uk/pet/nessa-2183446",
     "available": true,
@@ -688,8 +696,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Neeno",
-    "url": "https://www.bluecross.org.uk/pet/neeno-2188729",
+    "name": "Ocean",
+    "url": "https://www.bluecross.org.uk/pet/ocean-2188237",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -712,8 +720,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Ocean",
-    "url": "https://www.bluecross.org.uk/pet/ocean-2188237",
+    "name": "Oscar",
+    "url": "https://www.bluecross.org.uk/pet/oscar-2188884",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -722,14 +730,6 @@
   {
     "name": "Otto",
     "url": "https://www.bluecross.org.uk/pet/otto-2182842",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Oscar",
-    "url": "https://www.bluecross.org.uk/pet/oscar-2188884",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -746,6 +746,14 @@
   {
     "name": "Peregrine",
     "url": "https://www.bluecross.org.uk/pet/peregrine-2185328",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Princess",
+    "url": "https://www.bluecross.org.uk/pet/princess-2186312",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -776,14 +784,6 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Princess",
-    "url": "https://www.bluecross.org.uk/pet/princess-2186312",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
     "name": "Reef & Lobster",
     "url": "https://www.bluecross.org.uk/pet/reef-lobster-2187576",
     "available": true,
@@ -794,22 +794,6 @@
   {
     "name": "Robbie",
     "url": "https://www.bluecross.org.uk/pet/robbie-2189071",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Ru",
-    "url": "https://www.bluecross.org.uk/pet/ru-2184847",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Rupert",
-    "url": "https://www.bluecross.org.uk/pet/rupert-2188424",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -832,8 +816,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Salem",
-    "url": "https://www.bluecross.org.uk/pet/salem-2182658",
+    "name": "Ru",
+    "url": "https://www.bluecross.org.uk/pet/ru-2184847",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Rupert",
+    "url": "https://www.bluecross.org.uk/pet/rupert-2188424",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -864,14 +856,6 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Sam",
-    "url": "https://www.bluecross.org.uk/pet/sam-2187849",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
     "name": "Sandals (and Socks)",
     "url": "https://www.bluecross.org.uk/pet/sandals-and-socks-2188483",
     "available": true,
@@ -880,8 +864,16 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Salem",
+    "url": "https://www.bluecross.org.uk/pet/salem-2182658",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Sam",
-    "url": "https://www.bluecross.org.uk/pet/sam-2188889",
+    "url": "https://www.bluecross.org.uk/pet/sam-2187849",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -890,6 +882,14 @@
   {
     "name": "Scooby",
     "url": "https://www.bluecross.org.uk/pet/scooby-2188710",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Sam",
+    "url": "https://www.bluecross.org.uk/pet/sam-2188889",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -928,6 +928,14 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Sloopy",
+    "url": "https://www.bluecross.org.uk/pet/sloopy-2186544",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Simba (& Lala)",
     "url": "https://www.bluecross.org.uk/pet/simba-lala-2188561",
     "available": true,
@@ -938,14 +946,6 @@
   {
     "name": "Sir Knight",
     "url": "https://www.bluecross.org.uk/pet/sir-knight-2186198",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Sloopy",
-    "url": "https://www.bluecross.org.uk/pet/sloopy-2186544",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -984,14 +984,6 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Stormy (and The Weather Kittens)",
-    "url": "https://www.bluecross.org.uk/pet/stormy-and-the-weather-kittens-2186585",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
     "name": "Storm",
     "url": "https://www.bluecross.org.uk/pet/storm-2178917",
     "available": true,
@@ -1000,8 +992,8 @@
     "evidence": "svg_sprite:#cat"
   },
   {
-    "name": "Story",
-    "url": "https://www.bluecross.org.uk/pet/story-2188047",
+    "name": "Stormy (and The Weather Kittens)",
+    "url": "https://www.bluecross.org.uk/pet/stormy-and-the-weather-kittens-2186585",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -1010,6 +1002,14 @@
   {
     "name": "Sunny (and The Weather Kittens)",
     "url": "https://www.bluecross.org.uk/pet/sunny-and-the-weather-kittens-2186584",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Story",
+    "url": "https://www.bluecross.org.uk/pet/story-2188047",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -1072,6 +1072,14 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Tonks",
+    "url": "https://www.bluecross.org.uk/pet/tonks-2186951",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Toby",
     "url": "https://www.bluecross.org.uk/pet/toby-2188220",
     "available": true,
@@ -1082,22 +1090,6 @@
   {
     "name": "Tom",
     "url": "https://www.bluecross.org.uk/pet/tom-2185732",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Tonks",
-    "url": "https://www.bluecross.org.uk/pet/tonks-2186951",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Topaz",
-    "url": "https://www.bluecross.org.uk/pet/topaz-2185249",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
@@ -1120,6 +1112,22 @@
     "evidence": "svg_sprite:#cat"
   },
   {
+    "name": "Topaz",
+    "url": "https://www.bluecross.org.uk/pet/topaz-2185249",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
+    "name": "Tyson",
+    "url": "https://www.bluecross.org.uk/pet/tyson-2187014",
+    "available": true,
+    "reason": "cta_found",
+    "species": "cat",
+    "evidence": "svg_sprite:#cat"
+  },
+  {
     "name": "Typhoo",
     "url": "https://www.bluecross.org.uk/pet/typhoo-2188662",
     "available": true,
@@ -1130,14 +1138,6 @@
   {
     "name": "Trixie",
     "url": "https://www.bluecross.org.uk/pet/trixie-2188887",
-    "available": true,
-    "reason": "cta_found",
-    "species": "cat",
-    "evidence": "svg_sprite:#cat"
-  },
-  {
-    "name": "Tyson",
-    "url": "https://www.bluecross.org.uk/pet/tyson-2187014",
     "available": true,
     "reason": "cta_found",
     "species": "cat",
