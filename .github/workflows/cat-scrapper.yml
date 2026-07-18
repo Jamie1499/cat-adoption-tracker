@@ -1,14 +1,13 @@
-name: Blue Cross Cat Tracker
+name: Blue Cross Cat Tracker (debug)
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "*/10 * * * *"
-  workflow_dispatch:
 
 jobs:
   track-bluecross:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
@@ -25,19 +24,19 @@ jobs:
         run: |
           pip install requests beautifulsoup4 lxml
 
-      - name: Run Blue Cross tracker
+      - name: Run Blue Cross tracker (debug)
         env:
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
-          DEBUG: "0"
+          DEBUG: "1"
+          SAVE_HTML_SAMPLES: "10"
+          FORCE_TEST: "0"
         run: python bluecross-tracker.py
 
-      - name: Commit JSON file
+      - name: Upload debug HTML (optional)
+        if: always()
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add bluecross_cats.json || echo "No JSON to add"
-          git commit -m "Update Blue Cross cats" || echo "No changes"
-          git push
+          echo "Saved debug HTML files (if any) to debug_html/"
+          ls -la debug_html || echo "No debug_html directory"
