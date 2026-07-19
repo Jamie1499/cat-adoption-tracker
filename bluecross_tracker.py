@@ -107,15 +107,15 @@ def collect_pet_urls():
         except Exception as e:
             log("Failed sitemap:", sm, e)
 
-    # Filter only cat pages (ID starts with 2)
+    # Filter only cat pages
     for l in all_locs:
         if "/pet/" not in l:
             continue
 
-        slug = l.split("/")[-1]  # "aire-2189066"
-        id_part = slug.split("-")[-1]  # "2189066"
+        slug = l.split("/")[-1]          # "aire-2189066"
+        id_part = slug.split("-")[-1]    # "2189066"
 
-        if not id_part.startswith("2"):
+        if not id_part.startswith("2"):  # cat IDs always start with 2
             continue
 
         pet_urls.add(l)
@@ -238,8 +238,11 @@ def main():
     previous = load_previous()
     current = scrape_bluecross()
 
-    # Save ALL cats (available + unavailable)
-    cats_only = [c for c in current if c.get("species") == "cat"]
+    # Only AVAILABLE cats should be saved
+    cats_only = [
+        c for c in current
+        if c.get("species") == "cat" and c.get("available") is True
+    ]
 
     added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
