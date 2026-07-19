@@ -16,9 +16,9 @@ FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 
 REQUEST_TIMEOUT = 30
 DEBUG = os.getenv("DEBUG", "1") == "1"
-SAVE_HTML_SAMPLES = int(os.getenv("SAVE_HTML_SAMPLES", "2"))
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
+SAVE_HTML_SAMPLES = int(os.getenv("SAVE_HTML_SAMPLES", "0"))
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "16"))  # faster
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))  # faster
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
 
 def log(*args):
@@ -73,7 +73,7 @@ def diff_cats(previous, current):
 # SCRAPER UTILITIES
 def make_session():
     s = requests.Session()
-    retries = Retry(total=3, backoff_factor=0.6, status_forcelist=(429, 500, 502, 503, 504))
+    retries = Retry(total=3, backoff_factor=0.4, status_forcelist=(429, 500, 502, 503, 504))
     adapter = HTTPAdapter(max_retries=retries)
     s.mount("https://", adapter)
     s.mount("http://", adapter)
@@ -86,6 +86,8 @@ def parse_sitemap(xml_text):
     return [el.text for el in root.findall(".//ns:loc", ns)]
 
 def collect_pet_urls():
+    log("Fetching Blue Cross sitemaps…")
+
     session = make_session()
     pet_urls = set()
 
@@ -96,16 +98,19 @@ def collect_pet_urls():
 
     all_locs = []
 
-    for sm in sitemap_pages:
-        try:
-            r = session.get(sm, timeout=REQUEST_TIMEOUT)
-            if r.status_code == 404:
-                continue
-            r.raise_for_status()
-            locs = parse_sitemap(r.text)
-            all_locs.extend(locs)
-        except Exception as e:
-            log("Failed sitemap:", sm, e)
+    # Fetch sitemaps in parallel for speed
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        futures = {ex.submit(session.get, sm, timeout=REQUEST_TIMEOUT): sm for sm in sitemap_pages}
+        for fut in as_completed(futures):
+            sm = futures[fut]
+            try:
+                r = fut.result()
+                r.raise_for_status()
+                locs = parse_sitemap(r.text)
+                log(f"Sitemap {sm} → {len(locs)} URLs")
+                all_locs.extend(locs)
+            except Exception as e:
+                log(f"Failed sitemap {sm}: {e}")
 
     # Filter only cat pages
     for l in all_locs:
@@ -120,6 +125,7 @@ def collect_pet_urls():
 
         pet_urls.add(l)
 
+    log(f"Total cat URLs: {len(pet_urls)}")
     return sorted(pet_urls)
 
 # PET PARSER
@@ -215,11 +221,12 @@ def scrape_bluecross():
     results = []
     futures = {}
 
+    log("Scraping Blue Cross cats…")
+
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         for idx, u in enumerate(pet_urls, start=1):
             fut = ex.submit(fetch_and_parse, session, idx, u)
             futures[fut] = u
-            time.sleep(REQUEST_DELAY / max(1, MAX_WORKERS))
 
         for fut in as_completed(futures):
             res = fut.result()
@@ -227,6 +234,9 @@ def scrape_bluecross():
                 pet = res[1]
                 if pet["species"] == "cat":
                     results.append(pet)
+                    log(f"Parsed {pet['name']} ({pet['url']}) available={pet['available']}")
+            else:
+                log("ERROR", res[1], res[2])
 
     session.close()
     return results

@@ -11,15 +11,14 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
-# Save JSON next to this file
 FILE = os.path.join(os.path.dirname(__file__), "battersea_cats.json")
 
 SITEMAP_URL = "https://www.battersea.org.uk/sitemap.xml"
 REQUEST_TIMEOUT = 30
 
 DEBUG = os.getenv("DEBUG", "1") == "1"
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "16"))
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))
 USER_AGENT = os.getenv("USER_AGENT", "battersea-tracker/1.0")
 
 def log(*args):
@@ -71,7 +70,7 @@ def diff_cats(previous, current):
 
 def make_session():
     s = requests.Session()
-    retries = Retry(total=3, backoff_factor=0.6, status_forcelist=(429, 500, 502, 503, 504))
+    retries = Retry(total=3, backoff_factor=0.4, status_forcelist=(429, 500, 502, 503, 504))
     adapter = HTTPAdapter(max_retries=retries)
     s.mount("https://", adapter)
     s.mount("http://", adapter)
@@ -84,16 +83,20 @@ def parse_sitemap(xml_text):
     return [el.text for el in root.findall(".//ns:loc", ns)]
 
 def collect_cat_urls():
+    log("Fetching Battersea sitemap…")
+
     session = make_session()
     try:
         r = session.get(SITEMAP_URL, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
         locs = parse_sitemap(r.text)
+        log(f"Sitemap → {len(locs)} URLs")
     except Exception as e:
         log("Failed to fetch Battersea sitemap:", e)
         return []
 
     cats = [u for u in locs if "/cats/cat-rehoming-gallery/" in u]
+    log(f"Total cat URLs: {len(cats)}")
     return sorted(cats)
 
 def extract_cat(html_text, url):
@@ -104,7 +107,6 @@ def extract_cat(html_text, url):
 
     text = soup.get_text(" ", strip=True).lower()
 
-    # Battersea "removed" banner
     if name.strip().lower() == "do something extraordinary":
         is_reserved = True
         reason = "removed_banner"
@@ -132,30 +134,25 @@ def fetch_and_parse(session, idx, url):
 
 def scrape_battersea():
     urls = collect_cat_urls()
-    log("Found Battersea cat URLs:", len(urls))
-
     session = make_session()
     results = []
     futures = {}
+
+    log("Scraping Battersea cats…")
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         for idx, u in enumerate(urls, start=1):
             fut = ex.submit(fetch_and_parse, session, idx, u)
             futures[fut] = u
-            time.sleep(REQUEST_DELAY / max(1, MAX_WORKERS))
 
         for fut in as_completed(futures):
             res = fut.result()
             if res[0] == "ok":
                 cat = res[1]
-                # Save all cats (available + unavailable) for diffing
+                log(f"Parsed {cat['name']} ({cat['url']}) available={cat['available']}")
                 results.append(cat)
-                if cat["available"]:
-                    print(f"KEEP {cat['name']} ({cat['url']})")
-                else:
-                    print(f"SKIP {cat['name']} ({cat['url']}) {cat['reason']}")
             else:
-                print("ERROR", res[1], res[2])
+                log("ERROR", res[1], res[2])
 
     session.close()
     return results
@@ -166,8 +163,10 @@ def main():
     previous = load_previous()
     current = scrape_battersea()
 
-    # All cats (available + unavailable) participate in diff
-    cats_only = [c for c in current if c.get("species") == "cat"]
+    cats_only = [
+        c for c in current
+        if c.get("species") == "cat" and c.get("available") is True
+    ]
 
     added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here

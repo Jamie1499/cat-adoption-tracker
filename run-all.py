@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
-import os
-
-from bluecross_tracker import main as run_bluecross
-from battersea_tracker import main as run_battersea
+import concurrent.futures
+from bluecross_tracker import main as bc_main
+from battersea_tracker import main as bt_main
 from email_utils import send_combined_email
 
-NO_EMAIL = os.getenv("NO_EMAIL", "1") == "1"
+def run_all():
+    print("Starting parallel scrapers…")
 
-def main():
-    print("Running Blue Cross scraper…")
-    bc_added, bc_removed = run_bluecross()
+    # Run Blue Cross + Battersea at the same time
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
+        future_bc = ex.submit(bc_main)
+        future_bt = ex.submit(bt_main)
 
-    print("Running Battersea scraper…")
-    bt_added, bt_removed = run_battersea()
+        bc_added, bc_removed = future_bc.result()
+        bt_added, bt_removed = future_bt.result()
 
-    print("Blue Cross added:", len(bc_added), "removed:", len(bc_removed))
-    print("Battersea added:", len(bt_added), "removed:", len(bt_removed))
+    print(f"Blue Cross added: {len(bc_added)} removed: {len(bc_removed)}")
+    print(f"Battersea added: {len(bt_added)} removed: {len(bt_removed)}")
 
-    if NO_EMAIL:
-        print("NO_EMAIL=1 — skipping combined email.")
-        return
-
-    send_combined_email(bc_added, bc_removed, bt_added, bt_removed)
+    # Only send email if there are actual changes
+    if bc_added or bc_removed or bt_added or bt_removed:
+        print("Sending email update…")
+        send_combined_email(bc_added, bc_removed, bt_added, bt_removed)
+    else:
+        print("No changes detected — no email sent.")
 
 if __name__ == "__main__":
-    main()
+    run_all()
