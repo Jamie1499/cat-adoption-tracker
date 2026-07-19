@@ -1,5 +1,9 @@
 name: Cat Adoption Tracker
 
+concurrency:
+  group: cat-adoption-tracker
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
   repository_dispatch:
