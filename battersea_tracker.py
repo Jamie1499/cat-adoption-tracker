@@ -103,15 +103,22 @@ def extract_cat(html_text, url):
     name = h1.get_text(strip=True) if h1 else url.split("/")[-1].replace("-", " ").title()
 
     text = soup.get_text(" ", strip=True).lower()
-    is_reserved = "reserved" in text.split()
+
+    # Battersea "removed" banner
+    if name.strip().lower() == "do something extraordinary":
+        is_reserved = True
+        reason = "removed_banner"
+    else:
+        is_reserved = "reserved" in text.split()
+        reason = "reserved" if is_reserved else "available"
 
     return {
         "id": url.rstrip("/"),
         "name": name,
         "url": url,
         "available": not is_reserved,
-        "reason": "reserved" if is_reserved else "available",
-        "species": "cat"
+        "reason": reason,
+        "species": "cat",
     }
 
 def fetch_and_parse(session, idx, url):

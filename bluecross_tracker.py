@@ -20,7 +20,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
-FILE = "bluecross_cats.json"
+FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 DEFAULT_SITEMAP_URL = "https://www.bluecross.org.uk/sitemap.xml"
 REQUEST_TIMEOUT = 30
 
