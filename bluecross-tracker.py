@@ -48,9 +48,10 @@ USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0 (+https://github.com
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
 REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
 
-EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
-EMAIL_TO = os.getenv("EMAIL_TO")
+EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
+EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
 
 
 def log(*args):
@@ -128,6 +129,7 @@ def send_diff_email(added, removed):
     import smtplib
     from email.mime.text import MIMEText
 
+    # Build email body
     body = (
         "Blue Cross Cat Tracker Update\n\n"
         f"New cats ({len(added)}):\n" +
@@ -137,14 +139,24 @@ def send_diff_email(added, removed):
         "".join("- {} ({})\n".format(c["name"], c["url"]) for c in removed)
     )
 
+    # Build message
     msg = MIMEText(body)
     msg["Subject"] = "Blue Cross Cat Tracker – Updates"
-    msg["From"] = EMAIL_USER
-    msg["To"] = EMAIL_TO
+    msg["From"] = EMAIL_FROM
 
+    # Collect recipients
+    recipients = []
+    if EMAIL_TO_1:
+        recipients.append(EMAIL_TO_1)
+    if EMAIL_TO_2:
+        recipients.append(EMAIL_TO_2)
+
+    msg["To"] = ", ".join(recipients)
+
+    # Send email
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(EMAIL_USER, EMAIL_PASS)
-        smtp.send_message(msg)
+        smtp.login(EMAIL_FROM, EMAIL_PASS)
+        smtp.sendmail(EMAIL_FROM, recipients, msg.as_string())
 
     print("Email sent.")
 
