@@ -107,14 +107,14 @@ def send_diff_email(added, removed):
     import smtplib
     from email.mime.text import MIMEText
 
-body = (
-    "Blue Cross Cat Tracker Update\n\n"
-    f"New cats ({len(added)}):\n" +
-    "".join("- {} ({})\n".format(c["name"], c["url"]) for c in added) +
-    "\n" +
-    f"Removed cats ({len(removed)}):\n" +
-    "".join("- {} ({})\n".format(c["name"], c["url"]) for c in removed)
-)
+    body = (
+        "Blue Cross Cat Tracker Update\n\n"
+        f"New cats ({len(added)}):\n" +
+        "".join("- {} ({})\n".format(c["name"], c["url"]) for c in added) +
+        "\n" +
+        f"Removed cats ({len(removed)}):\n" +
+        "".join("- {} ({})\n".format(c["name"], c["url"]) for c in removed)
+    )
 
     msg = MIMEText(body)
     msg["Subject"] = "Blue Cross Cat Tracker – Updates"
