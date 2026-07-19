@@ -153,7 +153,7 @@ def collect_pet_urls():
 
     # Filter pet URLs
     for l in all_locs:
-        if "/pet/" in l:
+        if "/pet/2" in l:
             pet_urls.add(l)
 
     log(f"Total pet URLs found: {len(pet_urls)}")
