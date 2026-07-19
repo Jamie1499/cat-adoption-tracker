@@ -2,7 +2,8 @@ name: Cat Adoption Tracker
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/15 * * * *"   # fast checks (may skip)
+    - cron: "0 * * * *"      # guaranteed hourly fallback
   workflow_dispatch:
 
 jobs:
