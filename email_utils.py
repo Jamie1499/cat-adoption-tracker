@@ -7,7 +7,7 @@ EMAIL_PASS = os.getenv("EMAIL_PASS")
 EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
 EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
 
-def send_combined_email(bc_added, bc_removed, bt_added, bt_removed):
+def send_combined_email(bc_added, bc_removed, bt_added, bt_removed, cc_added, cc_removed):
     recipients = [r for r in [EMAIL_TO_1, EMAIL_TO_2] if r]
 
     if not recipients:
@@ -20,17 +20,22 @@ def send_combined_email(bc_added, bc_removed, bt_added, bt_removed):
     body += "=== Blue Cross ===\n"
     body += f"Added ({len(bc_added)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bc_added) or "None\n"
-    body += "\n"
-    body += f"Removed ({len(bc_removed)}):\n"
+    body += "\nRemoved:\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bc_removed) or "None\n"
 
     # BATTERSEA
     body += "\n\n=== Battersea ===\n"
     body += f"Added ({len(bt_added)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bt_added) or "None\n"
-    body += "\n"
-    body += f"Removed ({len(bt_removed)}):\n"
+    body += "\nRemoved:\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bt_removed) or "None\n"
+
+    # CATCHAT
+    body += "\n\n=== CatChat ===\n"
+    body += f"Added ({len(cc_added)}):\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in cc_added) or "None\n"
+    body += "\nRemoved:\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in cc_removed) or "None\n"
 
     msg = MIMEText(body)
     msg["Subject"] = "Cat Adoption Tracker – Updates"
