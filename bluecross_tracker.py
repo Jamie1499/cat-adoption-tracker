@@ -126,40 +126,39 @@ def parse_sitemap(xml_text):
 
 
 def collect_pet_urls():
-    pet_urls = set()
     session = make_session()
+    pet_urls = set()
 
-    try:
-        r = session.get(SITEMAP_URL, timeout=REQUEST_TIMEOUT)
-        r.raise_for_status()
-        locs = parse_sitemap(r.text)
-    except Exception as e:
-        log("Failed to fetch main sitemap:", e)
-        return []
-
-    # Find nested sitemap XML files
-    nested_sitemaps = [u for u in locs if u.endswith(".xml")]
+    # Blue Cross uses paginated sitemaps
+    sitemap_pages = [
+        "https://www.bluecross.org.uk/sitemap.xml?page=1",
+        "https://www.bluecross.org.uk/sitemap.xml?page=2",
+    ]
 
     all_locs = []
 
-    if nested_sitemaps:
-        for sm in nested_sitemaps:
-            try:
-                r2 = session.get(sm, timeout=REQUEST_TIMEOUT)
-                r2.raise_for_status()
-                locs2 = parse_sitemap(r2.text)
-                all_locs.extend(locs2)
-            except Exception as e:
-                log("Failed nested sitemap:", sm, e)
-    else:
-        all_locs = locs
+    for sm in sitemap_pages:
+        try:
+            r = session.get(sm, timeout=REQUEST_TIMEOUT)
+            if r.status_code == 404:
+                log(f"Skipping missing sitemap page: {sm}")
+                continue
 
-    # Filter pet URLs EXACTLY as before
+            r.raise_for_status()
+            locs = parse_sitemap(r.text)
+            all_locs.extend(locs)
+            log(f"Loaded sitemap page: {sm} ({len(locs)} URLs)")
+        except Exception as e:
+            log(f"Failed to load sitemap page {sm}: {e}")
+
+    # Filter pet URLs
     for l in all_locs:
         if "/pet/" in l:
             pet_urls.add(l)
 
+    log(f"Total pet URLs found: {len(pet_urls)}")
     return sorted(pet_urls)
+
 
 
 
