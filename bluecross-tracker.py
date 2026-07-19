@@ -31,7 +31,7 @@ SITEMAP_FILE = os.getenv("SITEMAP_FILE", "").strip()
 SITEMAP_URL = os.getenv("SITEMAP_URL", DEFAULT_SITEMAP_URL)
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0 (+https://github.com/yourname)")
 
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "32"))
 REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
 
 EMAIL_USER = os.getenv("EMAIL_USER")
