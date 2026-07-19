@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 """
-Blue Cross tracker (simplified)
+Blue Cross tracker (tidied + modular)
 
-- Relies on SVG sprite (#cat) to determine species (strict).
-- Uses a requests.Session with retries and a ThreadPoolExecutor for parallel fetches.
-- Supports multiple local sitemap files via SITEMAP_FILES env var.
-- Saves a compact JSON file of detected cats only.
-- Keeps debug HTML samples when requested.
-
-Environment variables:
-  SITEMAP_FILES    -> comma-separated local sitemap files (e.g., sitemap_page1.xml,sitemap_page2.xml)
-  SITEMAP_FILE     -> single local sitemap file (fallback)
-  SITEMAP_URL      -> remote sitemap URL (fallback)
-  DEBUG            -> "1" for verbose logging (default 1)
-  SAVE_HTML_SAMPLES-> number of HTML samples to save (default 2)
-  NO_EMAIL         -> "1" to skip email sending (default 1)
-  MAX_WORKERS      -> number of parallel workers (default 8)
-  REQUEST_DELAY    -> small stagger delay in seconds between submissions (default 0.25)
-  USER_AGENT       -> override User-Agent header
+- Strict species detection via SVG sprite (#cat)
+- Availability detection via JSON-LD, CTA buttons, or phrases
+- Parallel scraping with retries
+- Writes bluecross_cats.json
+- Returns (added, removed) for run-all.py
 """
+
 import os
 import json
 import time
@@ -31,27 +21,23 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
-# --- Config ---
+# ---------------------------------------------------------------------------
+# CONFIG
+# ---------------------------------------------------------------------------
+
 FILE = "bluecross_cats.json"
 DEFAULT_SITEMAP_URL = "https://www.bluecross.org.uk/sitemap.xml"
 REQUEST_TIMEOUT = 30
 
 DEBUG = os.getenv("DEBUG", "1") == "1"
 SAVE_HTML_SAMPLES = int(os.getenv("SAVE_HTML_SAMPLES", "2"))
-NO_EMAIL = os.getenv("NO_EMAIL", "1") == "1"
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
+USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
 
 SITEMAP_FILES = [p.strip() for p in os.getenv("SITEMAP_FILES", "").split(",") if p.strip()]
 SITEMAP_FILE = os.getenv("SITEMAP_FILE", "").strip()
 SITEMAP_URL = os.getenv("SITEMAP_URL", DEFAULT_SITEMAP_URL)
-USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0 (+https://github.com/yourname)")
-
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
-
-EMAIL_FROM = os.getenv("EMAIL_FROM")
-EMAIL_PASS = os.getenv("EMAIL_PASS")
-EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
-EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
 
 
 def log(*args):
@@ -80,13 +66,13 @@ def save_final(cats):
 
 
 # ---------------------------------------------------------------------------
-# DIFF LOGIC (FIXED)
+# DIFF LOGIC (with ID fix)
 # ---------------------------------------------------------------------------
 
 def diff_cats(previous, current):
     prev_map = {}
 
-    # FIX: ensure every previous entry has an ID
+    # Backwards compatibility: older JSON had no "id"
     for c in previous:
         cid = c.get("id") or c.get("url")
         c["id"] = cid
@@ -94,10 +80,7 @@ def diff_cats(previous, current):
 
     curr_map = {c["id"]: c for c in current}
 
-    added = []
-    removed = []
-    still_here = []
-
+    added, removed, still_here = [], [], []
     now = datetime.utcnow().isoformat()
 
     for cid, cat in curr_map.items():
@@ -119,50 +102,7 @@ def diff_cats(previous, current):
 
 
 # ---------------------------------------------------------------------------
-# EMAIL
-# ---------------------------------------------------------------------------
-
-def send_diff_email(added, removed):
-    if not added and not removed:
-        return
-
-    import smtplib
-    from email.mime.text import MIMEText
-
-    # Build email body
-    body = (
-        "Blue Cross Cat Tracker Update\n\n"
-        f"New cats ({len(added)}):\n" +
-        "".join("- {} ({})\n".format(c["name"], c["url"]) for c in added) +
-        "\n" +
-        f"Removed cats ({len(removed)}):\n" +
-        "".join("- {} ({})\n".format(c["name"], c["url"]) for c in removed)
-    )
-
-    # Build message
-    msg = MIMEText(body)
-    msg["Subject"] = "Blue Cross Cat Tracker – Updates"
-    msg["From"] = EMAIL_FROM
-
-    # Collect recipients
-    recipients = []
-    if EMAIL_TO_1:
-        recipients.append(EMAIL_TO_1)
-    if EMAIL_TO_2:
-        recipients.append(EMAIL_TO_2)
-
-    msg["To"] = ", ".join(recipients)
-
-    # Send email
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(EMAIL_FROM, EMAIL_PASS)
-        smtp.sendmail(EMAIL_FROM, recipients, msg.as_string())
-
-    print("Email sent.")
-
-
-# ---------------------------------------------------------------------------
-# ORIGINAL SCRAPER (UNCHANGED)
+# SCRAPER UTILITIES
 # ---------------------------------------------------------------------------
 
 def save_sample_html(index, url, html):
@@ -175,7 +115,7 @@ def save_sample_html(index, url, html):
     return path
 
 
-def make_session_with_retries():
+def make_session():
     s = requests.Session()
     retries = Retry(total=3, backoff_factor=0.6, status_forcelist=(429, 500, 502, 503, 504))
     adapter = HTTPAdapter(max_retries=retries)
@@ -191,51 +131,55 @@ def parse_sitemap(xml_text):
     return [el.text for el in root.findall(".//ns:loc", ns)]
 
 
-def collect_pet_urls_from_sitemap(sitemap_url):
+def collect_pet_urls():
     pet_urls = set()
 
+    # Local sitemap files
     if SITEMAP_FILES:
         log("Using local sitemap files:", ", ".join(SITEMAP_FILES))
         for local in SITEMAP_FILES:
             if not os.path.exists(local):
-                log("Sitemap file not found:", local)
+                log("Missing sitemap:", local)
                 continue
             try:
                 with open(local, "r", encoding="utf-8") as f:
                     locs = parse_sitemap(f.read())
                 for l in locs:
-                    if l and "/pet/" in l:
+                    if "/pet/" in l:
                         pet_urls.add(l)
             except Exception as e:
-                log("Failed to parse local sitemap", local, e)
+                log("Failed to parse sitemap:", local, e)
         return sorted(pet_urls)
 
+    # Single local sitemap
     if SITEMAP_FILE:
         if not os.path.exists(SITEMAP_FILE):
-            log("SITEMAP_FILE set but not found:", SITEMAP_FILE)
+            log("SITEMAP_FILE not found:", SITEMAP_FILE)
             return []
         log("Using local sitemap file:", SITEMAP_FILE)
         with open(SITEMAP_FILE, "r", encoding="utf-8") as f:
             try:
                 locs = parse_sitemap(f.read())
             except Exception as e:
-                log("Failed to parse local sitemap:", e)
+                log("Failed to parse sitemap:", e)
                 return []
         for l in locs:
-            if l and "/pet/" in l:
+            if "/pet/" in l:
                 pet_urls.add(l)
         return sorted(pet_urls)
 
+    # Remote sitemap
     try:
-        session = make_session_with_retries()
-        r = session.get(sitemap_url, timeout=REQUEST_TIMEOUT)
+        session = make_session()
+        r = session.get(SITEMAP_URL, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
         locs = parse_sitemap(r.text)
     except Exception as e:
-        log("Failed to fetch/parse remote sitemap:", e)
+        log("Failed to fetch sitemap:", e)
         return []
 
-    nested = [u for u in locs if u and u.endswith(".xml")]
+    # Nested sitemaps
+    nested = [u for u in locs if u.endswith(".xml")]
     if nested:
         for ns_url in nested:
             try:
@@ -244,30 +188,36 @@ def collect_pet_urls_from_sitemap(sitemap_url):
                 r2.raise_for_status()
                 locs2 = parse_sitemap(r2.text)
                 for l in locs2:
-                    if l and "/pet/" in l:
+                    if "/pet/" in l:
                         pet_urls.add(l)
             except Exception as e:
-                log("Nested sitemap fetch failed:", ns_url, e)
+                log("Nested sitemap failed:", ns_url, e)
     else:
         for l in locs:
-            if l and "/pet/" in l:
+            if "/pet/" in l:
                 pet_urls.add(l)
 
     return sorted(pet_urls)
 
 
-def extract_pet_from_detail(html_text, url):
+# ---------------------------------------------------------------------------
+# PET DETAIL PARSER
+# ---------------------------------------------------------------------------
+
+def extract_pet(html_text, url):
     soup = BeautifulSoup(html_text, "lxml")
 
+    # Name
     meta_title = soup.find("meta", property="og:title")
     if meta_title and meta_title.get("content"):
         name = meta_title["content"].strip()
     else:
         h1 = soup.find("h1")
-        name = h1.get_text(strip=True) if h1 else url.rstrip("/").split("/")[-1].replace("-", " ").title()
+        name = h1.get_text(strip=True) if h1 else url.split("/")[-1].replace("-", " ").title()
 
     text = soup.get_text(" ", strip=True).lower()
 
+    # JSON-LD availability
     is_available_jsonld = False
     try:
         for script in soup.find_all("script", type="application/ld+json"):
@@ -288,16 +238,20 @@ def extract_pet_from_detail(html_text, url):
                     if avail2 and ("instock" in str(avail2).lower() or "available" in str(avail2).lower()):
                         is_available_jsonld = True
     except Exception:
-        is_available_jsonld = False
+        pass
 
+    # CTA buttons
     cta_texts = []
     for tag in soup.find_all(["a", "button"]):
         t = tag.get_text(" ", strip=True).lower()
-        if t and any(k in t for k in ["enquire", "apply", "adopt", "rehome", "express interest"]):
+        if any(k in t for k in ["enquire", "apply", "adopt", "rehome", "express interest"]):
             cta_texts.append(t)
     has_cta = bool(cta_texts)
+
+    # Availability phrases
     has_phrase = any(p in text for p in ["available for adoption", "available now", "ready for adoption"])
 
+    # Species detection via SVG sprite
     species = "unknown"
     evidence = []
     try:
@@ -320,7 +274,10 @@ def extract_pet_from_detail(html_text, url):
     if species == "unknown":
         evidence.append("no_svg_sprite")
 
+    # Unavailable phrases
     is_unavailable = any(p in text for p in ["has been adopted", "reserved", "not available"])
+
+    # Final availability
     final_available = False
     reason = "filtered_out"
 
@@ -344,41 +301,45 @@ def extract_pet_from_detail(html_text, url):
         "id": url.rstrip("/"),
         "name": name,
         "url": url,
-        "available": bool(final_available),
+        "available": final_available,
         "reason": reason,
         "species": species,
         "evidence": ";".join(evidence)
     }
 
 
-def fetch_and_parse(session, idx, url, save_sample_limit):
+# ---------------------------------------------------------------------------
+# PARALLEL SCRAPER
+# ---------------------------------------------------------------------------
+
+def fetch_and_parse(session, idx, url):
     try:
         r = session.get(url, timeout=REQUEST_TIMEOUT)
         if r.status_code == 404:
             return ("skip", url, "404")
         r.raise_for_status()
-        if idx <= save_sample_limit:
+
+        if idx <= SAVE_HTML_SAMPLES:
             save_sample_html(idx, url, r.text)
-        pet = extract_pet_from_detail(r.text, url)
+
+        pet = extract_pet(r.text, url)
         return ("ok", pet)
+
     except Exception as e:
         return ("error", url, str(e))
 
 
-def scrape_bluecross_parallel():
-    pet_urls = collect_pet_urls_from_sitemap(SITEMAP_URL)
-    log("Found pet URLs in sitemap:", len(pet_urls))
-    results = []
+def scrape_bluecross():
+    pet_urls = collect_pet_urls()
+    log("Found Blue Cross pet URLs:", len(pet_urls))
 
-    session = make_session_with_retries()
-    save_limit = SAVE_HTML_SAMPLES
-    idx = 0
+    session = make_session()
+    results = []
     futures = {}
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-        for u in pet_urls:
-            idx += 1
-            fut = ex.submit(fetch_and_parse, session, idx, u, save_limit)
+        for idx, u in enumerate(pet_urls, start=1):
+            fut = ex.submit(fetch_and_parse, session, idx, u)
             futures[fut] = u
             time.sleep(REQUEST_DELAY / max(1, MAX_WORKERS))
 
@@ -386,9 +347,9 @@ def scrape_bluecross_parallel():
             res = fut.result()
             if res[0] == "ok":
                 pet = res[1]
-                if pet["available"]:
-                    results.append(pet)
+                if pet["available"] and pet["species"] == "cat":
                     print(f"KEEP {pet['name']} ({pet['url']}) reason={pet['reason']} species={pet['species']}")
+                    results.append(pet)
                 else:
                     print(f"SKIP {pet['name']} ({pet['url']}) reason={pet['reason']} species={pet['species']}")
             elif res[0] == "skip":
@@ -401,30 +362,19 @@ def scrape_bluecross_parallel():
 
 
 # ---------------------------------------------------------------------------
-# MAIN
+# MAIN ENTRYPOINT (returns added, removed)
 # ---------------------------------------------------------------------------
 
 def main():
-    print("Starting Blue Cross tracker… DEBUG=" + str(DEBUG))
+    print("Starting Blue Cross tracker…")
 
     previous = load_previous()
-    current = scrape_bluecross_parallel()
+    current = scrape_bluecross()
 
-    cats_only = [c for c in current if c.get("species") == "cat" and c.get("available")]
-    print(f"Filtered to {len(cats_only)} cats.")
-
-    added, removed, still_here = diff_cats(previous, cats_only)
-
+    added, removed, still_here = diff_cats(previous, current)
     final = added + still_here
     save_final(final)
 
     print(f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
 
-    if NO_EMAIL:
-        print("NO_EMAIL=1 — skipping email.")
-    else:
-        send_diff_email(added, removed)
-
-
-if __name__ == "__main__":
-    main()
+    return added, removed
