@@ -148,11 +148,12 @@ def scrape_battersea():
             res = fut.result()
             if res[0] == "ok":
                 cat = res[1]
+                # Save all cats (available + unavailable) for diffing
+                results.append(cat)
                 if cat["available"]:
                     print(f"KEEP {cat['name']} ({cat['url']})")
-                    results.append(cat)
                 else:
-                    print(f"SKIP {cat['name']} ({cat['url']}) reserved")
+                    print(f"SKIP {cat['name']} ({cat['url']}) {cat['reason']}")
             else:
                 print("ERROR", res[1], res[2])
 
@@ -165,7 +166,10 @@ def main():
     previous = load_previous()
     current = scrape_battersea()
 
-    added, removed, still_here = diff_cats(previous, current)
+    # All cats (available + unavailable) participate in diff
+    cats_only = [c for c in current if c.get("species") == "cat"]
+
+    added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
     save_final(final)
 
