@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 """
-Blue Cross tracker with change‑tracking + timestamps + diff‑based email.
+Blue Cross tracker (simplified)
 
-All original scraping logic preserved.
+- Relies on SVG sprite (#cat) to determine species (strict).
+- Uses a requests.Session with retries and a ThreadPoolExecutor for parallel fetches.
+- Supports multiple local sitemap files via SITEMAP_FILES env var.
+- Saves a compact JSON file of detected cats only.
+- Keeps debug HTML samples when requested.
+
+Environment variables:
+  SITEMAP_FILES    -> comma-separated local sitemap files (e.g., sitemap_page1.xml,sitemap_page2.xml)
+  SITEMAP_FILE     -> single local sitemap file (fallback)
+  SITEMAP_URL      -> remote sitemap URL (fallback)
+  DEBUG            -> "1" for verbose logging (default 1)
+  SAVE_HTML_SAMPLES-> number of HTML samples to save (default 2)
+  NO_EMAIL         -> "1" to skip email sending (default 1)
+  MAX_WORKERS      -> number of parallel workers (default 8)
+  REQUEST_DELAY    -> small stagger delay in seconds between submissions (default 0.25)
+  USER_AGENT       -> override User-Agent header
 """
-
 import os
 import json
 import time
@@ -31,7 +45,7 @@ SITEMAP_FILE = os.getenv("SITEMAP_FILE", "").strip()
 SITEMAP_URL = os.getenv("SITEMAP_URL", DEFAULT_SITEMAP_URL)
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0 (+https://github.com/yourname)")
 
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "32"))
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
 REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.25"))
 
 EMAIL_USER = os.getenv("EMAIL_USER")
@@ -65,11 +79,18 @@ def save_final(cats):
 
 
 # ---------------------------------------------------------------------------
-# DIFF LOGIC
+# DIFF LOGIC (FIXED)
 # ---------------------------------------------------------------------------
 
 def diff_cats(previous, current):
-    prev_map = {c["id"]: c for c in previous}
+    prev_map = {}
+
+    # FIX: ensure every previous entry has an ID
+    for c in previous:
+        cid = c.get("id") or c.get("url")
+        c["id"] = cid
+        prev_map[cid] = c
+
     curr_map = {c["id"]: c for c in current}
 
     added = []
@@ -347,6 +368,7 @@ def scrape_bluecross_parallel():
             idx += 1
             fut = ex.submit(fetch_and_parse, session, idx, u, save_limit)
             futures[fut] = u
+            time.sleep(REQUEST_DELAY / max(1, MAX_WORKERS))
 
         for fut in as_completed(futures):
             res = fut.result()
