@@ -20,13 +20,13 @@ def send_combined_email(bc_added, bc_removed, bt_added, bt_removed):
     body += "=== Blue Cross ===\n"
     body += f"Added ({len(bc_added)}):\n"
     body += "".join(f"- {c['name']} ({c['url']})\n" for c in bc_added) or "None\n"
-    body += "\nRemoved ({len(bc_removed)}):\n"
+    body += f"Removed ({len(bc_removed)}):\n"
     body += "".join(f"- {c['name']} ({c['url']})\n" for c in bc_removed) or "None\n"
 
     body += "\n\n=== Battersea ===\n"
     body += f"Added ({len(bt_added)}):\n"
     body += "".join(f"- {c['name']} ({c['url']})\n" for c in bt_added) or "None\n"
-    body += "\nRemoved ({len(bt_removed)}):\n"
+    body += f"Removed ({len(bt_removed)}):\n"
     body += "".join(f"- {c['name']} ({c['url']})\n" for c in bt_removed) or "None\n"
 
     msg = MIMEText(body)
