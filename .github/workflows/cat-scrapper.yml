@@ -1,5 +1,13 @@
 name: Cat Adoption Tracker
 
+run-name: >
+  Cat Adoption Tracker – ${{
+    github.event_name == 'repository_dispatch' && 'Scheduled Trigger' ||
+    github.event_name == 'workflow_dispatch' && 'Manual Trigger' ||
+    github.event_name == 'schedule' && 'GitHub Cron Trigger' ||
+    'Unknown Trigger'
+  }}
+
 concurrency:
   group: cat-adoption-tracker
   cancel-in-progress: true
