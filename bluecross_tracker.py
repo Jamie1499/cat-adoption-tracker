@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Blue Cross tracker (tidied + modular)
+Blue Cross tracker (rolled-back matching logic + modular)
 
-- Strict species detection via SVG sprite (#cat)
-- Availability detection via JSON-LD, CTA buttons, or phrases
-- Parallel scraping with retries
-- Writes bluecross_cats.json
-- Returns (added, removed) for run-all.py
+Restored behaviour:
+- Species detection via SVG sprite (#cat) EXACTLY as before
+- Availability detection via JSON-LD, CTA, phrases EXACTLY as before
+- Filtering to cats_only EXACTLY as before
 """
 
 import os
@@ -20,10 +19,6 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
-
-# ---------------------------------------------------------------------------
-# CONFIG
-# ---------------------------------------------------------------------------
 
 FILE = "bluecross_cats.json"
 DEFAULT_SITEMAP_URL = "https://www.bluecross.org.uk/sitemap.xml"
@@ -72,7 +67,6 @@ def save_final(cats):
 def diff_cats(previous, current):
     prev_map = {}
 
-    # Backwards compatibility: older JSON had no "id"
     for c in previous:
         cid = c.get("id") or c.get("url")
         c["id"] = cid
@@ -201,7 +195,7 @@ def collect_pet_urls():
 
 
 # ---------------------------------------------------------------------------
-# PET DETAIL PARSER
+# PET DETAIL PARSER (ROLLED BACK)
 # ---------------------------------------------------------------------------
 
 def extract_pet(html_text, url):
@@ -217,7 +211,7 @@ def extract_pet(html_text, url):
 
     text = soup.get_text(" ", strip=True).lower()
 
-    # JSON-LD availability
+    # JSON-LD availability (unchanged)
     is_available_jsonld = False
     try:
         for script in soup.find_all("script", type="application/ld+json"):
@@ -240,7 +234,7 @@ def extract_pet(html_text, url):
     except Exception:
         pass
 
-    # CTA buttons
+    # CTA buttons (unchanged)
     cta_texts = []
     for tag in soup.find_all(["a", "button"]):
         t = tag.get_text(" ", strip=True).lower()
@@ -248,10 +242,10 @@ def extract_pet(html_text, url):
             cta_texts.append(t)
     has_cta = bool(cta_texts)
 
-    # Availability phrases
+    # Availability phrases (unchanged)
     has_phrase = any(p in text for p in ["available for adoption", "available now", "ready for adoption"])
 
-    # Species detection via SVG sprite
+    # SPECIES DETECTION (ROLLED BACK EXACTLY)
     species = "unknown"
     evidence = []
     try:
@@ -274,10 +268,10 @@ def extract_pet(html_text, url):
     if species == "unknown":
         evidence.append("no_svg_sprite")
 
-    # Unavailable phrases
+    # Unavailable phrases (unchanged)
     is_unavailable = any(p in text for p in ["has been adopted", "reserved", "not available"])
 
-    # Final availability
+    # FINAL AVAILABILITY (ROLLED BACK EXACTLY)
     final_available = False
     reason = "filtered_out"
 
@@ -309,7 +303,7 @@ def extract_pet(html_text, url):
 
 
 # ---------------------------------------------------------------------------
-# PARALLEL SCRAPER
+# PARALLEL SCRAPER (unchanged)
 # ---------------------------------------------------------------------------
 
 def fetch_and_parse(session, idx, url):
@@ -371,7 +365,10 @@ def main():
     previous = load_previous()
     current = scrape_bluecross()
 
-    added, removed, still_here = diff_cats(previous, current)
+    # FILTER EXACTLY AS BEFORE
+    cats_only = [c for c in current if c.get("species") == "cat" and c.get("available")]
+
+    added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
     save_final(final)
 
