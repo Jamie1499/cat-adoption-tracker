@@ -25,7 +25,6 @@ def log(*args):
     if DEBUG:
         print(*args)
 
-# JSON LOAD / SAVE
 def load_previous():
     if not os.path.exists(FILE):
         return []
@@ -40,7 +39,6 @@ def save_final(cats):
     with open(FILE, "w", encoding="utf-8") as f:
         json.dump(cats_sorted, f, indent=2, ensure_ascii=False)
 
-# DIFF LOGIC
 def diff_cats(previous, current):
     prev_map = {c["id"]: c for c in previous}
     curr_map = {c["id"]: c for c in current}
@@ -65,7 +63,6 @@ def diff_cats(previous, current):
 
     return added, removed, still_here
 
-# HTTP session
 def make_session():
     s = requests.Session()
     retries = Retry(total=3, backoff_factor=0.4, status_forcelist=(429, 500, 502, 503, 504))
@@ -75,46 +72,43 @@ def make_session():
     s.headers.update({"User-Agent": USER_AGENT})
     return s
 
-# Parse region page
 def parse_region(html, region_url):
     soup = BeautifulSoup(html, "lxml")
 
-    # CatChat uses .cat-listing for each cat
-    cards = soup.select(".cat-listing")
-
+    rescues = soup.select(".rescue")
     results = []
 
-    for card in cards:
-        # Name
-        name_tag = card.find(["h3", "h2"])
-        if not name_tag:
-            continue
-        name = name_tag.get_text(strip=True)
+    for rescue in rescues:
+        cards = rescue.select(".cat")
+        for card in cards:
 
-        # URL
-        link = card.find("a")
-        if not link or not link.get("href"):
-            continue
-        url = link["href"]
-        if url.startswith("/"):
-            url = "https://catchat.org" + url
+            name_tag = card.select_one(".cat-name")
+            if not name_tag:
+                continue
+            name = name_tag.get_text(strip=True)
 
-        # Reserved via paw icon
-        reserved = bool(card.select_one(".icon.reserved"))
+            link = card.select_one(".cat-link")
+            if not link or not link.get("href"):
+                continue
 
-        results.append({
-            "id": url.rstrip("/"),
-            "name": name,
-            "url": url,
-            "available": not reserved,
-            "reason": "reserved" if reserved else "available",
-            "species": "cat",
-            "region": region_url,
-        })
+            url = link["href"]
+            if url.startswith("/"):
+                url = "https://catchat.org" + url
+
+            reserved = bool(card.select_one(".icon.reserved"))
+
+            results.append({
+                "id": url.rstrip("/"),
+                "name": name,
+                "url": url,
+                "available": not reserved,
+                "reason": "reserved" if reserved else "available",
+                "species": "cat",
+                "region": region_url,
+            })
 
     return results
 
-# Fetch region
 def fetch_region(session, region_url):
     try:
         r = session.get(region_url, timeout=REQUEST_TIMEOUT)
@@ -126,7 +120,6 @@ def fetch_region(session, region_url):
         log("ERROR fetching region:", region_url, e)
         return []
 
-# Main scrape
 def scrape_catchat():
     session = make_session()
     results = []
@@ -146,14 +139,12 @@ def scrape_catchat():
     session.close()
     return results
 
-# MAIN
 def main():
     print("Starting CatChat tracker…")
 
     previous = load_previous()
     current = scrape_catchat()
 
-    # Only AVAILABLE cats
     cats_only = [c for c in current if c["available"]]
 
     added, removed, still_here = diff_cats(previous, cats_only)
