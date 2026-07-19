@@ -36,3 +36,11 @@ jobs:
           EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
 
         run: python run-all.py
+
+      - name: Commit updated JSON
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add *.json
+          git commit -m "Update cat JSON" || echo "No changes"
+          git push

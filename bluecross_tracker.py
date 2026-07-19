@@ -109,8 +109,16 @@ def collect_pet_urls():
 
     # Filter only cat pages (ID starts with 2)
     for l in all_locs:
-        if "/pet/2" in l:
-            pet_urls.add(l)
+        if "/pet/" not in l:
+            continue
+
+        slug = l.split("/")[-1]  # "aire-2189066"
+        id_part = slug.split("-")[-1]  # "2189066"
+
+        if not id_part.startswith("2"):
+            continue
+
+        pet_urls.add(l)
 
     return sorted(pet_urls)
 
