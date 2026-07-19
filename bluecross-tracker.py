@@ -348,7 +348,6 @@ def scrape_bluecross_parallel():
             idx += 1
             fut = ex.submit(fetch_and_parse, session, idx, u, save_limit)
             futures[fut] = u
-            time.sleep(REQUEST_DELAY / max(1, MAX_WORKERS))
 
         for fut in as_completed(futures):
             res = fut.result()
