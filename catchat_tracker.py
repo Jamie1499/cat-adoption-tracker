@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import json
-import time
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -10,16 +9,13 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
-# Save JSON next to this script
 FILE = os.path.join(os.path.dirname(__file__), "catchat_cats.json")
 
 REQUEST_TIMEOUT = 30
 DEBUG = os.getenv("DEBUG", "1") == "1"
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "16"))
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))
+MAX_WORKERS = 4
 USER_AGENT = os.getenv("USER_AGENT", "catchat-tracker/1.0")
 
-# CatChat regions to scrape
 REGIONS = [
     "https://catchat.org/adopt-a-cat/buckinghamshire",
     "https://catchat.org/adopt-a-cat/hertfordshire",
@@ -46,12 +42,7 @@ def save_final(cats):
 
 # DIFF LOGIC
 def diff_cats(previous, current):
-    prev_map = {}
-    for c in previous:
-        cid = c.get("id") or c.get("url")
-        c["id"] = cid
-        prev_map[cid] = c
-
+    prev_map = {c["id"]: c for c in previous}
     curr_map = {c["id"]: c for c in current}
 
     added, removed, still_here = [], [], []
@@ -88,8 +79,8 @@ def make_session():
 def parse_region(html, region_url):
     soup = BeautifulSoup(html, "lxml")
 
-    # CatChat uses varied card classes across rescues
-    cards = soup.select(".cat-card, .cat-listing, .cat, .listing")
+    # CatChat uses .cat-listing for each cat
+    cards = soup.select(".cat-listing")
 
     results = []
 
@@ -128,7 +119,9 @@ def fetch_region(session, region_url):
     try:
         r = session.get(region_url, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
-        return parse_region(r.text, region_url)
+        cats = parse_region(r.text, region_url)
+        log(f"{region_url} → {len(cats)} cats found")
+        return cats
     except Exception as e:
         log("ERROR fetching region:", region_url, e)
         return []
@@ -147,9 +140,7 @@ def scrape_catchat():
             futures[fut] = region
 
         for fut in as_completed(futures):
-            region = futures[fut]
             cats = fut.result()
-            log(f"Region {region} → {len(cats)} cats")
             results.extend(cats)
 
     session.close()
