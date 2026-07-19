@@ -127,71 +127,40 @@ def parse_sitemap(xml_text):
 
 def collect_pet_urls():
     pet_urls = set()
+    session = make_session()
 
-    # Local sitemap files
-    if SITEMAP_FILES:
-        log("Using local sitemap files:", ", ".join(SITEMAP_FILES))
-        for local in SITEMAP_FILES:
-            if not os.path.exists(local):
-                log("Missing sitemap:", local)
-                continue
-            try:
-                with open(local, "r", encoding="utf-8") as f:
-                    locs = parse_sitemap(f.read())
-                for l in locs:
-                    if "/pet/" in l:
-                        pet_urls.add(l)
-            except Exception as e:
-                log("Failed to parse sitemap:", local, e)
-        return sorted(pet_urls)
-
-    # Single local sitemap
-    if SITEMAP_FILE:
-        if not os.path.exists(SITEMAP_FILE):
-            log("SITEMAP_FILE not found:", SITEMAP_FILE)
-            return []
-        log("Using local sitemap file:", SITEMAP_FILE)
-        with open(SITEMAP_FILE, "r", encoding="utf-8") as f:
-            try:
-                locs = parse_sitemap(f.read())
-            except Exception as e:
-                log("Failed to parse sitemap:", e)
-                return []
-        for l in locs:
-            if "/pet/" in l:
-                pet_urls.add(l)
-        return sorted(pet_urls)
-
-    # Remote sitemap
     try:
-        session = make_session()
         r = session.get(SITEMAP_URL, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
         locs = parse_sitemap(r.text)
     except Exception as e:
-        log("Failed to fetch sitemap:", e)
+        log("Failed to fetch main sitemap:", e)
         return []
 
-    # Nested sitemaps
-    nested = [u for u in locs if u.endswith(".xml")]
-    if nested:
-        for ns_url in nested:
+    # Find nested sitemap XML files
+    nested_sitemaps = [u for u in locs if u.endswith(".xml")]
+
+    all_locs = []
+
+    if nested_sitemaps:
+        for sm in nested_sitemaps:
             try:
-                log("Fetching nested sitemap:", ns_url)
-                r2 = session.get(ns_url, timeout=REQUEST_TIMEOUT)
+                r2 = session.get(sm, timeout=REQUEST_TIMEOUT)
                 r2.raise_for_status()
                 locs2 = parse_sitemap(r2.text)
-                for l in locs2:
-                    if "/pet/" in l:
-                        pet_urls.add(l)
+                all_locs.extend(locs2)
             except Exception as e:
-                log("Nested sitemap failed:", ns_url, e)
+                log("Failed nested sitemap:", sm, e)
     else:
-        for l in locs:
-            if "/pet/" in l:
-                pet_urls.add(l)
+        all_locs = locs
+
+    # Filter pet URLs EXACTLY as before
+    for l in all_locs:
+        if "/pet/" in l:
+            pet_urls.add(l)
 
     return sorted(pet_urls)
+
 
 
 # ---------------------------------------------------------------------------
