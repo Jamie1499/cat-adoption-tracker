@@ -1,15 +1,5 @@
 [
   {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/adam",
-    "name": "Adam",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/adam",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/allegra",
     "name": "Allegra",
     "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/allegra",
@@ -17,7 +7,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/angus",
@@ -27,7 +17,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/arthur",
@@ -37,7 +27,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bella",
@@ -47,7 +37,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bellingham",
@@ -57,7 +47,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/billie",
@@ -67,17 +57,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/billy",
-    "name": "Do something extraordinary",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/billy",
-    "available": false,
-    "reason": "removed_banner",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bisto",
@@ -87,7 +67,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/blu-sky",
@@ -97,7 +77,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bonnie",
@@ -107,7 +87,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bronwyn",
@@ -117,7 +97,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/buddy",
@@ -127,7 +107,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:46:06.225627",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bugsy",
@@ -137,7 +117,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/bumblebee",
@@ -147,7 +127,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/callie",
@@ -157,17 +137,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/carla",
-    "name": "Carla",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/carla",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/cookie",
@@ -177,7 +147,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dobby",
@@ -187,17 +157,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dolly",
-    "name": "Do something extraordinary",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dolly",
-    "available": false,
-    "reason": "removed_banner",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dorothy",
@@ -207,27 +167,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dotty",
-    "name": "Do something extraordinary",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dotty",
-    "available": false,
-    "reason": "removed_banner",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dr-mcdreamy",
-    "name": "Dr. McDreamy",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dr-mcdreamy",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/dyllis",
@@ -237,7 +177,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/eccles",
@@ -247,7 +187,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/einstein",
@@ -257,7 +197,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/flirty-bertie",
@@ -267,7 +207,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/frank",
@@ -277,7 +217,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/freddie",
@@ -287,7 +227,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/gentle",
@@ -297,7 +237,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/ginger",
@@ -307,17 +247,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/ginkgo",
-    "name": "Ginkgo",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/ginkgo",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/haggis",
@@ -327,7 +257,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/hank",
@@ -337,7 +267,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/horatio",
@@ -347,7 +277,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/hovis",
@@ -357,7 +287,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/hubble",
@@ -367,7 +297,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/huck",
@@ -377,7 +307,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/huncholini",
@@ -387,17 +317,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/jonesy",
-    "name": "Jonesy",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/jonesy",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/knot",
@@ -407,7 +327,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/ladybug",
@@ -417,7 +337,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/lily-pad",
@@ -427,7 +347,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/liquorice-and-sherbert",
@@ -437,7 +357,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/lizzie",
@@ -447,7 +367,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/lola",
@@ -457,7 +377,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/lola-bunny",
@@ -467,7 +387,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/lulu",
@@ -477,7 +397,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/magnolia",
@@ -487,7 +407,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/majesty",
@@ -497,7 +417,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/malteser",
@@ -507,7 +427,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/marble",
@@ -517,17 +437,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/marley",
-    "name": "Marley",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/marley",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/mary-poppins",
@@ -537,7 +447,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/maya",
@@ -547,7 +457,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/melon",
@@ -557,7 +467,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/mercury",
@@ -567,7 +477,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/mexico",
@@ -577,7 +487,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/miguel",
@@ -587,7 +497,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/minnie",
@@ -597,7 +507,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/minx",
@@ -607,7 +517,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/miu-miu",
@@ -617,7 +527,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/monsoon",
@@ -627,7 +537,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/mr-butterbean",
@@ -637,7 +547,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/mr-tully",
@@ -647,7 +557,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/nessie",
@@ -657,7 +567,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/nicholas",
@@ -667,7 +577,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/nisa",
@@ -677,7 +587,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/oak",
@@ -687,7 +597,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/oreo",
@@ -697,7 +607,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/paddy",
@@ -707,7 +617,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/pawpaw",
@@ -717,7 +627,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/peter",
@@ -727,27 +637,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/petulia",
-    "name": "Petulia",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/petulia",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/phoebe",
-    "name": "Phoebe",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/phoebe",
-    "available": false,
-    "reason": "reserved",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/phoenix",
@@ -757,7 +647,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/pixel",
@@ -767,7 +657,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/pocket",
@@ -777,7 +667,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/polly",
@@ -787,7 +677,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/poppy",
@@ -797,7 +687,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/princess",
@@ -807,7 +697,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/promise",
@@ -817,7 +707,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/puma",
@@ -827,7 +717,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/ralph",
@@ -837,7 +727,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/rodger",
@@ -847,7 +737,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/rodney",
@@ -857,7 +747,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/rosy",
@@ -867,7 +757,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sage",
@@ -877,7 +767,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sammi",
@@ -887,7 +777,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sausage",
@@ -897,7 +787,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sherbert-and-liquorice",
@@ -907,7 +797,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sif",
@@ -917,7 +807,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sir-loves-lot",
@@ -927,7 +817,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/slinky-malinki",
@@ -937,7 +827,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/smokey",
@@ -947,7 +837,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/spike",
@@ -957,7 +847,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/suki",
@@ -967,7 +857,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/sycamore",
@@ -977,7 +867,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/taggie",
@@ -987,7 +877,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/tink",
@@ -997,7 +887,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/topaz",
@@ -1007,7 +897,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/tula",
@@ -1017,17 +907,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
-  },
-  {
-    "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/veritas",
-    "name": "Do something extraordinary",
-    "url": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/veritas",
-    "available": false,
-    "reason": "removed_banner",
-    "species": "cat",
-    "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/winston",
@@ -1037,7 +917,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/womble",
@@ -1047,7 +927,7 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   },
   {
     "id": "https://www.battersea.org.uk/cats/cat-rehoming-gallery/ziggy",
@@ -1057,6 +937,6 @@
     "reason": "available",
     "species": "cat",
     "added": "2026-07-19T17:34:25.417953",
-    "lastSeen": "2026-07-19T17:48:14.221272"
+    "lastSeen": "2026-07-19T17:55:04.061819"
   }
 ]
