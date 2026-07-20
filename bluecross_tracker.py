@@ -130,10 +130,8 @@ def collect_pet_urls():
         slug = l.split("/")[-1]
         id_part = slug.split("-")[-1]
 
-        if not id_part.startswith("2"):
-            continue
-
-        pet_urls.add(l)
+        if id_part.startswith("2"):
+            pet_urls.add(l)
 
     log(f"Total cat URLs: {len(pet_urls)}")
     return sorted(pet_urls)
@@ -172,25 +170,11 @@ def extract_pet(html_text, url):
     except Exception:
         pass
 
-    # CTA buttons
-    cta_texts = []
-    for tag in soup.find_all(["a", "button"]):
-        t = tag.get_text(" ", strip=True).lower()
-        if any(k in t for k in ["enquire", "apply", "adopt", "rehome", "express interest"]):
-            cta_texts.append(t)
-    has_cta = bool(cta_texts)
-
-    # Availability phrases
-    has_phrase = any(p in text for p in ["available for adoption", "available now", "ready for adoption"])
-
-    # REMOVE SPECIES DETECTION — we already know it's a cat
-    species = "cat"
-
     # Unavailable phrases
-    is_unavailable = any(p in text for p in ["has been adopted", "reserved", "not available"])
+    unavailable = any(p in text for p in ["reserved", "has been adopted", "not available"])
 
     final_available = False
-    if not is_unavailable and (is_available_jsonld or has_cta or has_phrase):
+    if not unavailable and is_available_jsonld:
         final_available = True
 
     return {
@@ -198,7 +182,6 @@ def extract_pet(html_text, url):
         "name": name,
         "url": url,
         "available": final_available,
-        "species": species,
     }
 
 
@@ -251,10 +234,7 @@ def main():
     previous = load_previous()
     current = scrape_bluecross()
 
-    cats_only = [
-        c for c in current
-        if c.get("available") is True
-    ]
+    cats_only = [c for c in current if c.get("available") is True]
 
     added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
