@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
 import os
 import json
-import time
+import asyncio
+import aiohttp
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from xml.etree import ElementTree as ET
-
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
-# Save JSON next to this script
 FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 
 REQUEST_TIMEOUT = 30
 DEBUG = os.getenv("DEBUG", "1") == "1"
-SAVE_HTML_SAMPLES = int(os.getenv("SAVE_HTML_SAMPLES", "0"))
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.02"))
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "40"))   # async can handle big numbers
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
 
 
@@ -50,18 +44,13 @@ def save_final(cats):
 
 # DIFF LOGIC
 def diff_cats(previous, current):
-    prev_map = {}
-    for c in previous:
-        cid = c.get("id") or c.get("url")
-        c["id"] = cid
-        prev_map[cid] = c
-
-    curr_map = {c["id"]: c for c in current}
-
-    added, removed, still_here = [], [], []
+    prev_map = { (c.get("id") or c.get("url")): c for c in previous }
     now = datetime.utcnow().isoformat()
 
-    for cid, cat in curr_map.items():
+    added, removed, still_here = [], [], []
+
+    for cat in current:
+        cid = cat["id"]
         if cid not in prev_map:
             cat["added"] = now
             cat["lastSeen"] = now
@@ -73,72 +62,62 @@ def diff_cats(previous, current):
             still_here.append(cat)
 
     for cid, cat in prev_map.items():
-        if cid not in curr_map:
+        if cid not in {c["id"] for c in current}:
             removed.append(cat)
 
     return added, removed, still_here
 
 
-# SCRAPER UTILITIES
-def make_session():
-    s = requests.Session()
-    retries = Retry(total=3, backoff_factor=0.4, status_forcelist=(429, 500, 502, 503, 504))
-    adapter = HTTPAdapter(max_retries=retries)
-    s.mount("https://", adapter)
-    s.mount("http://", adapter)
-    s.headers.update({"User-Agent": USER_AGENT})
-    return s
-
-
+# Parse sitemap
 def parse_sitemap(xml_text):
     ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     root = ET.fromstring(xml_text)
     return [el.text for el in root.findall(".//ns:loc", ns)]
 
 
-def collect_pet_urls():
-    log("Fetching Blue Cross sitemaps…")
+async def fetch(session, url):
+    try:
+        async with session.get(url, timeout=REQUEST_TIMEOUT) as r:
+            return await r.text()
+    except Exception:
+        return None
 
-    session = make_session()
-    pet_urls = set()
+
+async def collect_pet_urls():
+    log("Fetching Blue Cross sitemaps…")
 
     sitemap_pages = [
         "https://www.bluecross.org.uk/sitemap.xml?page=1",
         "https://www.bluecross.org.uk/sitemap.xml?page=2",
     ]
 
+    async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT}) as session:
+        texts = await asyncio.gather(*(fetch(session, sm) for sm in sitemap_pages))
+
     all_locs = []
+    for sm, text in zip(sitemap_pages, texts):
+        if text:
+            locs = parse_sitemap(text)
+            log(f"Sitemap {sm} → {len(locs)} URLs")
+            all_locs.extend(locs)
 
-    with ThreadPoolExecutor(max_workers=2) as ex:
-        futures = {ex.submit(session.get, sm, timeout=REQUEST_TIMEOUT): sm for sm in sitemap_pages}
-        for fut in as_completed(futures):
-            sm = futures[fut]
-            try:
-                r = fut.result()
-                r.raise_for_status()
-                locs = parse_sitemap(r.text)
-                log(f"Sitemap {sm} → {len(locs)} URLs")
-                all_locs.extend(locs)
-            except Exception as e:
-                log(f"Failed sitemap {sm}: {e}")
-
-    # Filter only cat pages (ID starts with 2)
+    pet_urls = []
     for l in all_locs:
         if "/pet/" not in l:
             continue
-
         slug = l.split("/")[-1]
         id_part = slug.split("-")[-1]
-
         if id_part.startswith("2"):
-            pet_urls.add(l)
+            pet_urls.append(l)
 
     log(f"Total cat URLs: {len(pet_urls)}")
-    return sorted(pet_urls)
+    return pet_urls
 
 
-# PET PARSER
 def extract_pet(html_text, url):
+    if not html_text:
+        return None
+
     soup = BeautifulSoup(html_text, "lxml")
 
     meta_title = soup.find("meta", property="og:title")
@@ -152,30 +131,25 @@ def extract_pet(html_text, url):
 
     # JSON-LD availability
     is_available_jsonld = False
-    try:
-        for script in soup.find_all("script", type="application/ld+json"):
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
             import json as _json
-            try:
-                data = _json.loads(script.string or "{}")
-            except Exception:
-                continue
-            items = data if isinstance(data, list) else [data]
-            for it in items:
-                if isinstance(it, dict):
-                    offers = it.get("offers")
-                    if isinstance(offers, dict):
-                        avail = offers.get("availability") or offers.get("availabilityStatus")
-                        if avail and ("instock" in str(avail).lower() or "available" in str(avail).lower()):
-                            is_available_jsonld = True
-    except Exception:
-        pass
+            data = _json.loads(script.string or "{}")
+        except Exception:
+            continue
 
-    # Unavailable phrases
+        items = data if isinstance(data, list) else [data]
+        for it in items:
+            if isinstance(it, dict):
+                offers = it.get("offers")
+                if isinstance(offers, dict):
+                    avail = offers.get("availability") or offers.get("availabilityStatus")
+                    if avail and ("instock" in str(avail).lower() or "available" in str(avail).lower()):
+                        is_available_jsonld = True
+
     unavailable = any(p in text for p in ["reserved", "has been adopted", "not available"])
 
-    final_available = False
-    if not unavailable and is_available_jsonld:
-        final_available = True
+    final_available = is_available_jsonld and not unavailable
 
     return {
         "id": url.rstrip("/"),
@@ -185,61 +159,47 @@ def extract_pet(html_text, url):
     }
 
 
-# PARALLEL SCRAPER
-def fetch_and_parse(session, idx, url):
-    try:
-        if REQUEST_DELAY > 0:
-            time.sleep(REQUEST_DELAY)
+async def fetch_and_parse(session, url):
+    if REQUEST_DELAY > 0:
+        await asyncio.sleep(REQUEST_DELAY)
 
-        r = session.get(url, timeout=REQUEST_TIMEOUT)
-        r.raise_for_status()
-        pet = extract_pet(r.text, url)
-        return ("ok", pet)
-    except Exception as e:
-        return ("error", url, str(e))
+    html = await fetch(session, url)
+    return extract_pet(html, url)
 
 
-def scrape_bluecross():
-    pet_urls = collect_pet_urls()
-    session = make_session()
-    results = []
-    futures = {}
+async def scrape_bluecross_async():
+    pet_urls = await collect_pet_urls()
 
     log("Scraping Blue Cross cats…")
     log("Using MAX_WORKERS =", MAX_WORKERS)
     log("Using REQUEST_DELAY =", REQUEST_DELAY)
 
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-        for idx, u in enumerate(pet_urls, start=1):
-            fut = ex.submit(fetch_and_parse, session, idx, u)
-            futures[fut] = u
+    connector = aiohttp.TCPConnector(limit=MAX_WORKERS)
+    async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT},
+                                     connector=connector) as session:
 
-        for fut in as_completed(futures):
-            res = fut.result()
-            if res[0] == "ok":
-                pet = res[1]
-                results.append(pet)
-                log(f"Parsed {pet['name']} ({pet['url']}) available={pet['available']}")
-            else:
-                log("ERROR", res[1], res[2])
+        tasks = [fetch_and_parse(session, url) for url in pet_urls]
+        results = await asyncio.gather(*tasks)
 
-    session.close()
-    return results
+    # Filter out None
+    return [r for r in results if r]
 
 
-# MAIN
 def main():
     print(ts(), "Starting Blue Cross tracker…")
 
     previous = load_previous()
-    current = scrape_bluecross()
+    current = asyncio.run(scrape_bluecross_async())
 
-    cats_only = [c for c in current if c.get("available") is True]
+    cats_only = [c for c in current if c.get("available")]
 
     added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
     save_final(final)
 
     print(ts(), f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
-
     return added, removed
+
+
+if __name__ == "__main__":
+    main()
