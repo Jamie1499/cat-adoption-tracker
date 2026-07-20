@@ -20,22 +20,24 @@ jobs:
   run:
     runs-on: ubuntu-latest
 
+    env:
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
+      EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
+
     steps:
-      # --- Startup diagnostics ---
       - name: Log start time
         run: echo "::notice::Workflow started at $(date -u)"
 
-      # --- Checkout repository (Node 24 native) ---
       - name: Checkout code
         uses: actions/checkout@v5
 
-      # --- Set up Python (Node 24 native) ---
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      # --- Cache pip dependencies ---
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
@@ -44,21 +46,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # --- Install dependencies ---
       - name: Install dependencies
         run: |
           echo "::group::Installing dependencies"
           pip install -r requirements.txt
           echo "::endgroup::"
 
-      # --- Run all scrapers ---
       - name: Run all scrapers
         run: |
           echo "::group::Running scrapers"
           python run-all.py
           echo "::endgroup::"
 
-      # --- Commit updated JSON files ---
       - name: Commit updated JSON
         run: |
           git config user.name "github-actions"
@@ -67,6 +66,5 @@ jobs:
           git diff --cached --quiet || git commit -m "Update cat data"
           git push
 
-      # --- End time ---
       - name: Log end time
         run: echo "::notice::Workflow ended at $(date -u)"
