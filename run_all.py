@@ -2,7 +2,7 @@
 import os
 import time
 import concurrent.futures
-from datetime import datetime
+from datetime import datetime, timezone
 
 from bluecross_tracker import main as bc_main
 from battersea_tracker import main as bt_main
@@ -12,13 +12,13 @@ from email_utils import send_combined_email
 
 def ts():
     """Return a timestamp prefix for logs."""
-    return datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S UTC]")
+    return datetime.now(timezone.utc).strftime("[%Y-%m-%d %H:%M:%S UTC]")
 
 
 def run_all():
     # --- Startup diagnostics visible in GitHub Actions ---
     print(f"{ts()} ::group::[Run‑All] Workflow startup")
-    print(f"{ts()} [Run‑All] UTC time: {datetime.utcnow().isoformat()}")
+    print(f"{ts()} [Run‑All] UTC time: {datetime.now(timezone.utc).isoformat()}")
     print(f"{ts()} [Run‑All] Working directory: {os.getcwd()}")
     print(f"{ts()} [Run‑All] Files in workspace:")
     for f in os.listdir("."):
@@ -28,6 +28,7 @@ def run_all():
     start_time = time.time()
     print(f"{ts()} [Run‑All] Starting parallel scrapers…")
 
+    # Run all scrapers in parallel
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
         print(f"{ts()} [Run‑All] Submitting Blue Cross scraper…")
         future_bc = ex.submit(bc_main)
@@ -46,6 +47,7 @@ def run_all():
     elapsed = round(time.time() - start_time, 2)
     print(f"{ts()} [Run‑All] All scrapers finished in {elapsed}s")
 
+    # --- Blue Cross ---
     print(f"{ts()} [Run‑All] Blue Cross added={len(bc_added)} removed={len(bc_removed)}")
     if bc_added:
         print(ts(), "[Run‑All] Blue Cross added cats:")
@@ -57,6 +59,7 @@ def run_all():
         for c in bc_removed:
             print(ts(), "   -", c["name"], c["url"])
 
+    # --- Battersea ---
     print(f"{ts()} [Run‑All] Battersea added={len(bt_added)} removed={len(bt_removed)}")
     if bt_added:
         print(ts(), "[Run‑All] Battersea added cats:")
@@ -68,8 +71,8 @@ def run_all():
         for c in bt_removed:
             print(ts(), "   -", c["name"], c["url"])
 
+    # --- CatChat ---
     print(f"{ts()} [Run‑All] CatChat added={len(cc_added)} removed={len(cc_removed)}")
-
     if cc_added:
         print(ts(), "[Run‑All] CatChat added cats:")
         for c in cc_added:
@@ -80,6 +83,7 @@ def run_all():
         for c in cc_removed:
             print(ts(), "   -", c["name"], c["url"])
 
+    # --- Email notifications ---
     if bc_added or bc_removed or bt_added or bt_removed or cc_added or cc_removed:
         print(f"{ts()} [Run‑All] Sending email update…")
         send_combined_email(
