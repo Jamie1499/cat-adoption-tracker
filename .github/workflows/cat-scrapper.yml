@@ -58,7 +58,7 @@ jobs:
       - name: Run all scrapers
         run: |
           echo "::group::Running scrapers"
-          python run-all.py
+          python run_all.py
           echo "::endgroup::"
 
       - name: Commit updated JSON
