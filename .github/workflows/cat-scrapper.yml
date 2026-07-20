@@ -21,37 +21,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # --- Startup diagnostics ---
+      - name: Log start time
+        run: echo "::notice::Workflow started at $(date -u)"
+
+      # --- Checkout repository (Node 24 native) ---
+      - name: Checkout code
         uses: actions/checkout@v5
 
+      # --- Set up Python (Node 24 native) ---
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
+      # --- Cache pip dependencies ---
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # --- Install dependencies ---
       - name: Install dependencies
         run: |
+          echo "::group::Installing dependencies"
           pip install -r requirements.txt
+          echo "::endgroup::"
 
+      # --- Run all scrapers ---
       - name: Run all scrapers
-        env:
-          DEBUG: 0
-          SAVE_HTML_SAMPLES: 0
-          NO_EMAIL: 0
-          MAX_WORKERS: 8
-          REQUEST_DELAY: 0.02
+        run: |
+          echo "::group::Running scrapers"
+          python run-all.py
+          echo "::endgroup::"
 
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
-          EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
-
-        run: python run-all.py
-
+      # --- Commit updated JSON files ---
       - name: Commit updated JSON
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add *.json
-          git commit -m "Update cat JSON" || echo "No changes"
+          git diff --cached --quiet || git commit -m "Update cat data"
           git push
+
+      # --- End time ---
+      - name: Log end time
+        run: echo "::notice::Workflow ended at $(date -u)"
