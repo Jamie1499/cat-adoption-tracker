@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
 import os
 import json
+import requests
 from datetime import datetime, timezone
-from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
 
 FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 DEBUG = os.getenv("DEBUG", "1") == "1"
 
-USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/124.0.0.0 Safari/537.36"
-)
+BASE_URL = "https://www.bluecross.org.uk/pet/listing/cat"
 
-BASE_URL = "https://www.bluecross.org.uk/rehome/cat"
-
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-GB,en;q=0.9",
+    "Referer": "https://www.bluecross.org.uk/rehome/cat",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+}
 
 def ts():
     return datetime.now(timezone.utc).strftime("[%Y-%m-%d %H:%M:%S UTC]")
-
 
 def log(*args):
     if DEBUG:
         print(ts(), *args)
 
-
-# JSON LOAD / SAVE
 def load_previous():
     if not os.path.exists(FILE):
         return []
@@ -36,14 +38,11 @@ def load_previous():
     except Exception:
         return []
 
-
 def save_final(cats):
     cats_sorted = sorted(cats, key=lambda c: c["id"])
     with open(FILE, "w", encoding="utf-8") as f:
         json.dump(cats_sorted, f, indent=2, ensure_ascii=False)
 
-
-# DIFF LOGIC
 def diff_cats(previous, current):
     prev_map = {(c.get("id") or c.get("url")): c for c in previous}
     now = datetime.now(timezone.utc).isoformat()
@@ -68,94 +67,33 @@ def diff_cats(previous, current):
 
     return added, removed, still_here
 
+def scrape_bluecross():
+    log("Fetching Blue Cross JSON API…")
 
-# CHECK RESERVED STATUS ON CAT DETAIL PAGE
-def is_reserved(detail_url, page):
-    page.goto(detail_url, wait_until="networkidle", timeout=60000)
-    html = page.evaluate("() => document.documentElement.outerHTML")
-    soup = BeautifulSoup(html, "lxml")
+    r = requests.get(BASE_URL, headers=HEADERS, timeout=30)
+    r.raise_for_status()
 
-    # Reserved indicator appears as text anywhere on the page
-    status = soup.find(text=lambda t: t and "reserved" in t.lower())
-    return status is not None
+    data = r.json()
+    pets = data.get("results", [])
 
-
-# PLAYWRIGHT SCRAPER (HEADLESS STEALTH)
-def fetch_listing_html(page):
-    page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
-    return page.evaluate("() => document.documentElement.outerHTML")
-
-
-def extract_cats_from_html(html):
-    soup = BeautifulSoup(html, "lxml")
-
-    cards = soup.select("article.m-pet-listing-item__wrapper")
     results = []
-
-    for card in cards:
-        link = card.select_one("a.m-pet-listing-item")
-        if not link:
+    for pet in pets:
+        # Only keep cats that are NOT reserved
+        if pet.get("field_reserved", "").lower() == "yes":
             continue
 
-        url = "https://www.bluecross.org.uk" + link["href"]
-
-        name_tag = card.select_one("h4.m-pet-listing-item__content--title")
-        name = name_tag.get_text(strip=True) if name_tag else "Unknown"
+        url = "https://www.bluecross.org.uk" + pet["view_node"]
 
         results.append({
             "id": url.rstrip("/"),
-            "name": name,
+            "name": pet.get("title", "Unknown"),
             "url": url,
+            "available": True,
         })
 
+    log(f"Total available cats: {len(results)}")
     return results
 
-
-def scrape_bluecross():
-    log("Fetching rendered Blue Cross cat listing…")
-
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-web-security",
-                "--disable-features=IsolateOrigins",
-                "--disable-site-isolation-trials",
-                "--disable-infobars",
-                "--window-size=1280,800",
-                "--disable-gpu",
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-            ]
-        )
-
-        context = browser.new_context(
-            user_agent=USER_AGENT,
-            viewport={"width": 1280, "height": 800},
-            java_script_enabled=True,
-        )
-
-        page = context.new_page()
-
-        # Load listing page
-        listing_html = fetch_listing_html(page)
-        cats = extract_cats_from_html(listing_html)
-
-        # Filter reserved cats
-        available = []
-        for cat in cats:
-            if not is_reserved(cat["url"], page):
-                cat["available"] = True
-                available.append(cat)
-
-        browser.close()
-
-        log(f"Total available cats: {len(available)}")
-        return available
-
-
-# MAIN
 def main():
     print(ts(), "Starting Blue Cross tracker…")
 
@@ -168,7 +106,6 @@ def main():
 
     print(ts(), f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
     return added, removed
-
 
 if __name__ == "__main__":
     main()
