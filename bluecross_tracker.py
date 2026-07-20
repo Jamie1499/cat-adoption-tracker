@@ -70,21 +70,32 @@ def diff_cats(previous, current):
     return added, removed, still_here
 
 
-# Parse sitemap safely
-def parse_sitemap(xml_text):
+def parse_sitemap(text):
+    # Try XML first
     try:
         ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(text)
         return [el.text for el in root.findall(".//ns:loc", ns)]
     except Exception:
-        log("WARNING: Sitemap XML malformed, skipping.")
-        return []
+        pass
+
+    # Fallback: parse as HTML
+    try:
+        soup = BeautifulSoup(text, "lxml")
+        locs = [loc_tag.get_text(strip=True) for loc_tag in soup.find_all("loc")]
+        if locs:
+            return locs
+    except Exception:
+        pass
+
+    log("WARNING: Sitemap contained no <loc> entries.")
+    return []
 
 
 async def fetch(session, url):
     try:
         async with session.get(url, timeout=REQUEST_TIMEOUT) as r:
-            return await r.text()
+            return await r.text(errors="ignore")
     except Exception:
         return None
 
