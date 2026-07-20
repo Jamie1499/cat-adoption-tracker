@@ -17,8 +17,8 @@ FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 REQUEST_TIMEOUT = 30
 DEBUG = os.getenv("DEBUG", "1") == "1"
 SAVE_HTML_SAMPLES = int(os.getenv("SAVE_HTML_SAMPLES", "0"))
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "16"))  # faster
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))  # faster
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))  # faster
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.02"))  # faster
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
 
 
@@ -220,6 +220,9 @@ def extract_pet(html_text, url):
 # PARALLEL SCRAPER
 def fetch_and_parse(session, idx, url):
     try:
+        if REQUEST_DELAY > 0:
+            time.sleep(REQUEST_DELAY)
+
         r = session.get(url, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
         pet = extract_pet(r.text, url)

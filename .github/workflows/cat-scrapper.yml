@@ -26,6 +26,9 @@ jobs:
       EMAIL_TO_1: ${{ secrets.EMAIL_TO_1 }}
       EMAIL_TO_2: ${{ secrets.EMAIL_TO_2 }}
 
+      MAX_WORKERS: "8"
+      REQUEST_DELAY: "0.02"
+
     steps:
       - name: Log start time
         run: echo "::notice::Workflow started at $(date -u)"
