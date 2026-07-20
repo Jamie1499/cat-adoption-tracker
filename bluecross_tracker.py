@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 import os
 import json
-import requests
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
-# Save JSON next to this script
 FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
-
 DEBUG = os.getenv("DEBUG", "1") == "1"
-USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
+
+# Real Chrome user agent
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36"
+)
 
 BASE_URL = "https://www.bluecross.org.uk/rehome/cat"
 
@@ -65,71 +69,79 @@ def diff_cats(previous, current):
 
     return added, removed, still_here
 
+def fetch_rendered_html(url):
+    log("Launching Playwright (headful, anti‑bot)…")
 
-# SCRAPER
-def fetch_page(url):
-    try:
-        r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
-        r.raise_for_status()
-        return r.text
-    except Exception as e:
-        log("ERROR fetching page:", url, e)
-        return None
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins",
+                "--disable-site-isolation-trials",
+                "--disable-infobars",
+                "--window-size=1280,800",
+            ]
+        )
+
+        context = browser.new_context(
+            user_agent=USER_AGENT,
+            viewport={"width": 1280, "height": 800},
+            java_script_enabled=True,
+        )
+
+        page = context.new_page()
+
+        log("Loading Blue Cross page…")
+        page.goto(url, wait_until="networkidle", timeout=60000)
+
+        # Hydrated DOM (the real one)
+        html = page.evaluate("() => document.documentElement.outerHTML")
+
+        browser.close()
+        return html
 
 
-def extract_cats_from_page(html):
+def extract_cats_from_html(html):
     soup = BeautifulSoup(html, "lxml")
 
-    cards = soup.select("article.m-pet-listing-item_wrapper")
+    # Correct selector
+    cards = soup.select("article.m-pet-listing-item__wrapper")
     results = []
 
     for card in cards:
+        # Correct link selector
         link = card.select_one("a.m-pet-listing-item")
         if not link:
             continue
 
         url = "https://www.bluecross.org.uk" + link["href"]
 
-        name_tag = card.select_one("h3.m-pet-listing-item__title")
+        # Correct name selector
+        name_tag = card.select_one("h4.m-pet-listing-item__content--title")
         name = name_tag.get_text(strip=True) if name_tag else "Unknown"
 
-        reserved = card.select_one("div.m-pet-listing-item_reserved") is not None
-
-        # Only available cats (Option 1)
-        if reserved:
-            continue
+        # Reserved cats are not marked in the listing grid
+        reserved = False
 
         results.append({
             "id": url.rstrip("/"),
             "name": name,
             "url": url,
-            "available": True,
+            "available": not reserved,
         })
 
     return results
 
 
+
 def scrape_bluecross():
-    log("Fetching Blue Cross cat listing…")
-    all_cats = []
-    page = 0
-
-    while True:
-        url = f"{BASE_URL}?page={page}"
-        html = fetch_page(url)
-        if not html:
-            break
-
-        cats = extract_cats_from_page(html)
-        if not cats:
-            break
-
-        all_cats.extend(cats)
-        log(f"Page {page}: {len(cats)} available cats")
-        page += 1
-
-    log(f"Total available cats: {len(all_cats)}")
-    return all_cats
+    log("Fetching rendered Blue Cross cat listing…")
+    html = fetch_rendered_html(BASE_URL)
+    cats = extract_cats_from_html(html)
+    log(f"Total available cats: {len(cats)}")
+    return cats
 
 
 # MAIN
@@ -139,7 +151,7 @@ def main():
     previous = load_previous()
     current = scrape_bluecross()
 
-    cats_only = current  # Option 1: only available cats
+    cats_only = current  # Only available cats
 
     added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
