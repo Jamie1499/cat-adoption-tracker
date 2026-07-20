@@ -47,8 +47,38 @@ def run_all():
     print(f"{ts()} [Run‑All] All scrapers finished in {elapsed}s")
 
     print(f"{ts()} [Run‑All] Blue Cross added={len(bc_added)} removed={len(bc_removed)}")
+    if bc_added:
+        print(ts(), "[Run‑All] Blue Cross added cats:")
+        for c in bc_added:
+            print(ts(), "   +", c["name"], c["url"])
+
+    if bc_removed:
+        print(ts(), "[Run‑All] Blue Cross removed cats:")
+        for c in bc_removed:
+            print(ts(), "   -", c["name"], c["url"])
+
     print(f"{ts()} [Run‑All] Battersea added={len(bt_added)} removed={len(bt_removed)}")
+    if bt_added:
+        print(ts(), "[Run‑All] Battersea added cats:")
+        for c in bt_added:
+            print(ts(), "   +", c["name"], c["url"])
+
+    if bt_removed:
+        print(ts(), "[Run‑All] Battersea removed cats:")
+        for c in bt_removed:
+            print(ts(), "   -", c["name"], c["url"])
+
     print(f"{ts()} [Run‑All] CatChat added={len(cc_added)} removed={len(cc_removed)}")
+
+    if cc_added:
+        print(ts(), "[Run‑All] CatChat added cats:")
+        for c in cc_added:
+            print(ts(), "   +", c["name"], c["url"])
+
+    if cc_removed:
+        print(ts(), "[Run‑All] CatChat removed cats:")
+        for c in cc_removed:
+            print(ts(), "   -", c["name"], c["url"])
 
     if bc_added or bc_removed or bt_added or bt_removed or cc_added or cc_removed:
         print(f"{ts()} [Run‑All] Sending email update…")
