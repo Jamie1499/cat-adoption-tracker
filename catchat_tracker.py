@@ -16,14 +16,15 @@ DEBUG = os.getenv("DEBUG", "1") == "1"
 MAX_WORKERS = 4
 USER_AGENT = os.getenv("USER_AGENT", "catchat-tracker/1.0")
 
+MIN_RESULTS = 10  # minimum acceptable listings per site
+
 REGIONS = [
     "https://catchat.org/adopt-a-cat/buckinghamshire",
     "https://catchat.org/adopt-a-cat/hertfordshire",
 ]
 
 def log(*args):
-    if DEBUG:
-        print(*args)
+    print("[CatChat]", *args)
 
 def load_previous():
     if not os.path.exists(FILE):
@@ -83,6 +84,10 @@ def normalize_url(href):
     return href
 
 def parse_region(html, region_url):
+    if "maintenance" in html.lower() or "temporarily unavailable" in html.lower():
+        log("Maintenance page detected for", region_url)
+        return []
+
     soup = BeautifulSoup(html, "lxml")
     cards = soup.select("div#cat")
     results = []
@@ -112,15 +117,20 @@ def parse_region(html, region_url):
             "region": region_url,
         })
 
-    log(f"{region_url} → {len(results)} cats parsed")
+    log(region_url, "→ parsed", len(results), "cats")
     return results
 
 def fetch_region(session, region_url):
     try:
+        log("Fetching region:", region_url)
         r = session.get(region_url, timeout=REQUEST_TIMEOUT, allow_redirects=True)
         r.raise_for_status()
-        cats = parse_region(r.text, region_url)
-        return cats
+
+        html = r.text
+        log("HTML length:", len(html), "for", region_url)
+
+        return parse_region(html, region_url)
+
     except Exception as e:
         log("ERROR fetching region:", region_url, e)
         return []
@@ -142,21 +152,27 @@ def scrape_catchat():
             results.extend(cats)
 
     session.close()
+
     unique = {c["id"]: c for c in results}
+    total = len(unique)
+
+    log("Total unique cats:", total)
+
+    if total < MIN_RESULTS:
+        log("UNHEALTHY — only", total, "cats found, skipping update")
+        return []
+
     return list(unique.values())
 
 def main():
-    print("Starting CatChat tracker…")
+    print("[CatChat] Starting CatChat tracker…")
 
     previous = load_previous()
     current = scrape_catchat()
 
-    # --- HEALTH CHECK: prevent mass removals ---
-    MIN_RESULTS = 10
     if current is None or len(current) < MIN_RESULTS:
-        print(f"CatChat unhealthy — got {0 if current is None else len(current)} cats, skipping update")
-        return [], []   # No added, no removed
-    # -------------------------------------------
+        print("[CatChat] HEALTH CHECK FAILED — skipping diff/save")
+        return [], []
 
     cats_only = [c for c in current if c.get("available")]
 
@@ -164,10 +180,9 @@ def main():
     final = added + still_here
     save_final(final)
 
-    print(f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
+    print(f"[CatChat] Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
 
     return added, removed
-
 
 if __name__ == "__main__":
     main()
