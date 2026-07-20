@@ -238,6 +238,8 @@ def scrape_bluecross():
     futures = {}
 
     log("Scraping Blue Cross cats…")
+    log("Using MAX_WORKERS =", MAX_WORKERS)
+    log("Using REQUEST_DELAY =", REQUEST_DELAY)
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         for idx, u in enumerate(pet_urls, start=1):
