@@ -17,13 +17,12 @@ FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 REQUEST_TIMEOUT = 30
 DEBUG = os.getenv("DEBUG", "1") == "1"
 SAVE_HTML_SAMPLES = int(os.getenv("SAVE_HTML_SAMPLES", "0"))
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))  # faster
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.02"))  # faster
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.02"))
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
 
 
 def ts():
-    """Timestamp prefix for logs."""
     return datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S UTC]")
 
 
@@ -123,7 +122,7 @@ def collect_pet_urls():
             except Exception as e:
                 log(f"Failed sitemap {sm}: {e}")
 
-    # Filter only cat pages
+    # Filter only cat pages (ID starts with 2)
     for l in all_locs:
         if "/pet/" not in l:
             continue
@@ -184,28 +183,14 @@ def extract_pet(html_text, url):
     # Availability phrases
     has_phrase = any(p in text for p in ["available for adoption", "available now", "ready for adoption"])
 
-    # Species detection
-    species = "unknown"
-    try:
-        for use in soup.find_all("use"):
-            href = use.get("xlink:href") or use.get("href")
-            if not href:
-                continue
-            h = href.lower()
-            if "#cat" in h or "#kitten" in h:
-                species = "cat"
-                break
-            if any(k in h for k in ["#dog", "#rabbit", "#horse"]):
-                species = "other"
-                break
-    except Exception:
-        species = "unknown"
+    # REMOVE SPECIES DETECTION — we already know it's a cat
+    species = "cat"
 
     # Unavailable phrases
     is_unavailable = any(p in text for p in ["has been adopted", "reserved", "not available"])
 
     final_available = False
-    if species == "cat" and not is_unavailable and (is_available_jsonld or has_cta or has_phrase):
+    if not is_unavailable and (is_available_jsonld or has_cta or has_phrase):
         final_available = True
 
     return {
@@ -250,9 +235,8 @@ def scrape_bluecross():
             res = fut.result()
             if res[0] == "ok":
                 pet = res[1]
-                if pet["species"] == "cat":
-                    results.append(pet)
-                    log(f"Parsed {pet['name']} ({pet['url']}) available={pet['available']}")
+                results.append(pet)
+                log(f"Parsed {pet['name']} ({pet['url']}) available={pet['available']}")
             else:
                 log("ERROR", res[1], res[2])
 
@@ -269,7 +253,7 @@ def main():
 
     cats_only = [
         c for c in current
-        if c.get("species") == "cat" and c.get("available") is True
+        if c.get("available") is True
     ]
 
     added, removed, still_here = diff_cats(previous, cats_only)
