@@ -55,6 +55,11 @@ jobs:
           pip install -r requirements.txt
           echo "::endgroup::"
 
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps
+
       - name: Run all scrapers
         run: |
           echo "::group::Running scrapers"
