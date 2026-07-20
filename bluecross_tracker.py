@@ -69,9 +69,50 @@ def diff_cats(previous, current):
     return added, removed, still_here
 
 
+# CHECK RESERVED STATUS ON CAT DETAIL PAGE
+def is_reserved(detail_url, page):
+    page.goto(detail_url, wait_until="networkidle", timeout=60000)
+    html = page.evaluate("() => document.documentElement.outerHTML")
+    soup = BeautifulSoup(html, "lxml")
+
+    # Reserved indicator appears as text anywhere on the page
+    status = soup.find(text=lambda t: t and "reserved" in t.lower())
+    return status is not None
+
+
 # PLAYWRIGHT SCRAPER (HEADLESS STEALTH)
-def fetch_rendered_html(url):
-    log("Launching Playwright (headless stealth)…")
+def fetch_listing_html(page):
+    page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
+    return page.evaluate("() => document.documentElement.outerHTML")
+
+
+def extract_cats_from_html(html):
+    soup = BeautifulSoup(html, "lxml")
+
+    cards = soup.select("article.m-pet-listing-item__wrapper")
+    results = []
+
+    for card in cards:
+        link = card.select_one("a.m-pet-listing-item")
+        if not link:
+            continue
+
+        url = "https://www.bluecross.org.uk" + link["href"]
+
+        name_tag = card.select_one("h4.m-pet-listing-item__content--title")
+        name = name_tag.get_text(strip=True) if name_tag else "Unknown"
+
+        results.append({
+            "id": url.rstrip("/"),
+            "name": name,
+            "url": url,
+        })
+
+    return results
+
+
+def scrape_bluecross():
+    log("Fetching rendered Blue Cross cat listing…")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
@@ -97,50 +138,21 @@ def fetch_rendered_html(url):
 
         page = context.new_page()
 
-        log("Loading Blue Cross page…")
-        page.goto(url, wait_until="networkidle", timeout=60000)
+        # Load listing page
+        listing_html = fetch_listing_html(page)
+        cats = extract_cats_from_html(listing_html)
 
-        # Hydrated DOM (real rendered content)
-        html = page.evaluate("() => document.documentElement.outerHTML")
+        # Filter reserved cats
+        available = []
+        for cat in cats:
+            if not is_reserved(cat["url"], page):
+                cat["available"] = True
+                available.append(cat)
 
         browser.close()
-        return html
 
-
-def extract_cats_from_html(html):
-    soup = BeautifulSoup(html, "lxml")
-
-    cards = soup.select("article.m-pet-listing-item__wrapper")
-    results = []
-
-    for card in cards:
-        link = card.select_one("a.m-pet-listing-item")
-        if not link:
-            continue
-
-        url = "https://www.bluecross.org.uk" + link["href"]
-
-        name_tag = card.select_one("h4.m-pet-listing-item__content--title")
-        name = name_tag.get_text(strip=True) if name_tag else "Unknown"
-
-        reserved = False  # Reserved cats are not marked in listing grid
-
-        results.append({
-            "id": url.rstrip("/"),
-            "name": name,
-            "url": url,
-            "available": not reserved,
-        })
-
-    return results
-
-
-def scrape_bluecross():
-    log("Fetching rendered Blue Cross cat listing…")
-    html = fetch_rendered_html(BASE_URL)
-    cats = extract_cats_from_html(html)
-    log(f"Total available cats: {len(cats)}")
-    return cats
+        log(f"Total available cats: {len(available)}")
+        return available
 
 
 # MAIN
@@ -150,9 +162,7 @@ def main():
     previous = load_previous()
     current = scrape_bluecross()
 
-    cats_only = current
-
-    added, removed, still_here = diff_cats(previous, cats_only)
+    added, removed, still_here = diff_cats(previous, current)
     final = added + still_here
     save_final(final)
 
