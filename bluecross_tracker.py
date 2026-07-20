@@ -21,9 +21,16 @@ MAX_WORKERS = int(os.getenv("MAX_WORKERS", "16"))  # faster
 REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))  # faster
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
 
+
+def ts():
+    """Timestamp prefix for logs."""
+    return datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S UTC]")
+
+
 def log(*args):
     if DEBUG:
-        print(*args)
+        print(ts(), *args)
+
 
 # JSON LOAD / SAVE
 def load_previous():
@@ -35,10 +42,12 @@ def load_previous():
     except Exception:
         return []
 
+
 def save_final(cats):
     cats_sorted = sorted(cats, key=lambda c: c["id"])
     with open(FILE, "w", encoding="utf-8") as f:
         json.dump(cats_sorted, f, indent=2, ensure_ascii=False)
+
 
 # DIFF LOGIC
 def diff_cats(previous, current):
@@ -70,6 +79,7 @@ def diff_cats(previous, current):
 
     return added, removed, still_here
 
+
 # SCRAPER UTILITIES
 def make_session():
     s = requests.Session()
@@ -80,10 +90,12 @@ def make_session():
     s.headers.update({"User-Agent": USER_AGENT})
     return s
 
+
 def parse_sitemap(xml_text):
     ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     root = ET.fromstring(xml_text)
     return [el.text for el in root.findall(".//ns:loc", ns)]
+
 
 def collect_pet_urls():
     log("Fetching Blue Cross sitemaps…")
@@ -98,7 +110,6 @@ def collect_pet_urls():
 
     all_locs = []
 
-    # Fetch sitemaps in parallel for speed
     with ThreadPoolExecutor(max_workers=2) as ex:
         futures = {ex.submit(session.get, sm, timeout=REQUEST_TIMEOUT): sm for sm in sitemap_pages}
         for fut in as_completed(futures):
@@ -117,16 +128,17 @@ def collect_pet_urls():
         if "/pet/" not in l:
             continue
 
-        slug = l.split("/")[-1]          # "aire-2189066"
-        id_part = slug.split("-")[-1]    # "2189066"
+        slug = l.split("/")[-1]
+        id_part = slug.split("-")[-1]
 
-        if not id_part.startswith("2"):  # cat IDs always start with 2
+        if not id_part.startswith("2"):
             continue
 
         pet_urls.add(l)
 
     log(f"Total cat URLs: {len(pet_urls)}")
     return sorted(pet_urls)
+
 
 # PET PARSER
 def extract_pet(html_text, url):
@@ -172,7 +184,7 @@ def extract_pet(html_text, url):
     # Availability phrases
     has_phrase = any(p in text for p in ["available for adoption", "available now", "ready for adoption"])
 
-    # Species detection via SVG sprite
+    # Species detection
     species = "unknown"
     try:
         for use in soup.find_all("use"):
@@ -192,7 +204,6 @@ def extract_pet(html_text, url):
     # Unavailable phrases
     is_unavailable = any(p in text for p in ["has been adopted", "reserved", "not available"])
 
-    # Final availability
     final_available = False
     if species == "cat" and not is_unavailable and (is_available_jsonld or has_cta or has_phrase):
         final_available = True
@@ -205,6 +216,7 @@ def extract_pet(html_text, url):
         "species": species,
     }
 
+
 # PARALLEL SCRAPER
 def fetch_and_parse(session, idx, url):
     try:
@@ -214,6 +226,7 @@ def fetch_and_parse(session, idx, url):
         return ("ok", pet)
     except Exception as e:
         return ("error", url, str(e))
+
 
 def scrape_bluecross():
     pet_urls = collect_pet_urls()
@@ -241,14 +254,14 @@ def scrape_bluecross():
     session.close()
     return results
 
+
 # MAIN
 def main():
-    print("Starting Blue Cross tracker…")
+    print(ts(), "Starting Blue Cross tracker…")
 
     previous = load_previous()
     current = scrape_bluecross()
 
-    # Only AVAILABLE cats should be saved
     cats_only = [
         c for c in current
         if c.get("species") == "cat" and c.get("available") is True
@@ -258,6 +271,6 @@ def main():
     final = added + still_here
     save_final(final)
 
-    print(f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
+    print(ts(), f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
 
     return added, removed

@@ -23,8 +23,12 @@ REGIONS = [
     "https://catchat.org/adopt-a-cat/hertfordshire",
 ]
 
+def ts():
+    """Timestamp prefix for logs."""
+    return datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S UTC]")
+
 def log(*args):
-    print("[CatChat]", *args)
+    print(ts(), "[CatChat]", *args)
 
 def load_previous():
     if not os.path.exists(FILE):
@@ -165,13 +169,13 @@ def scrape_catchat():
     return list(unique.values())
 
 def main():
-    print("[CatChat] Starting CatChat tracker…")
+    print(ts(), "[CatChat] Starting CatChat tracker…")
 
     previous = load_previous()
     current = scrape_catchat()
 
     if current is None or len(current) < MIN_RESULTS:
-        print("[CatChat] HEALTH CHECK FAILED — skipping diff/save")
+        print(ts(), "[CatChat] HEALTH CHECK FAILED — skipping diff/save")
         return [], []
 
     cats_only = [c for c in current if c.get("available")]
@@ -180,7 +184,7 @@ def main():
     final = added + still_here
     save_final(final)
 
-    print(f"[CatChat] Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
+    print(ts(), f"[CatChat] Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
 
     return added, removed
 
