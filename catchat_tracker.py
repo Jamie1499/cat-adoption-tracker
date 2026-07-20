@@ -151,6 +151,13 @@ def main():
     previous = load_previous()
     current = scrape_catchat()
 
+    # --- HEALTH CHECK: prevent mass removals ---
+    MIN_RESULTS = 10
+    if current is None or len(current) < MIN_RESULTS:
+        print(f"CatChat unhealthy — got {0 if current is None else len(current)} cats, skipping update")
+        return [], []   # No added, no removed
+    # -------------------------------------------
+
     cats_only = [c for c in current if c.get("available")]
 
     added, removed, still_here = diff_cats(previous, cats_only)
@@ -160,6 +167,7 @@ def main():
     print(f"Added: {len(added)}, Removed: {len(removed)}, Still here: {len(still_here)}")
 
     return added, removed
+
 
 if __name__ == "__main__":
     main()

@@ -20,21 +20,21 @@ def send_combined_email(bc_added, bc_removed, bt_added, bt_removed, cc_added, cc
     body += "=== Blue Cross ===\n"
     body += f"Added ({len(bc_added)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bc_added) or "None\n"
-    body += "\nRemoved:\n"
+    body += f"\nRemoved ({len(bc_removed)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bc_removed) or "None\n"
 
     # BATTERSEA
     body += "\n\n=== Battersea ===\n"
     body += f"Added ({len(bt_added)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bt_added) or "None\n"
-    body += "\nRemoved:\n"
+    body += f"\nRemoved ({len(bt_removed)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in bt_removed) or "None\n"
 
     # CATCHAT
     body += "\n\n=== CatChat ===\n"
     body += f"Added ({len(cc_added)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in cc_added) or "None\n"
-    body += "\nRemoved:\n"
+    body += f"\nRemoved ({len(cc_removed)}):\n"
     body += "".join(f"- {c['name']} {c['url']}\n" for c in cc_removed) or "None\n"
 
     msg = MIMEText(body)
