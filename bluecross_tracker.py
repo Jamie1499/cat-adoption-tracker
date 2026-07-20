@@ -7,13 +7,15 @@ from datetime import datetime
 from xml.etree import ElementTree as ET
 from bs4 import BeautifulSoup
 
+# Save JSON next to this script
 FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 
 REQUEST_TIMEOUT = 30
 DEBUG = os.getenv("DEBUG", "1") == "1"
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "40"))   # async can handle big numbers
-REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0.0"))
 USER_AGENT = os.getenv("USER_AGENT", "bluecross-tracker/1.0")
+
+# Batch size (B2 = 40)
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", "40"))
 
 
 def ts():
@@ -68,11 +70,15 @@ def diff_cats(previous, current):
     return added, removed, still_here
 
 
-# Parse sitemap
+# Parse sitemap safely
 def parse_sitemap(xml_text):
-    ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
-    root = ET.fromstring(xml_text)
-    return [el.text for el in root.findall(".//ns:loc", ns)]
+    try:
+        ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+        root = ET.fromstring(xml_text)
+        return [el.text for el in root.findall(".//ns:loc", ns)]
+    except Exception:
+        log("WARNING: Sitemap XML malformed, skipping.")
+        return []
 
 
 async def fetch(session, url):
@@ -160,9 +166,6 @@ def extract_pet(html_text, url):
 
 
 async def fetch_and_parse(session, url):
-    if REQUEST_DELAY > 0:
-        await asyncio.sleep(REQUEST_DELAY)
-
     html = await fetch(session, url)
     return extract_pet(html, url)
 
@@ -171,18 +174,23 @@ async def scrape_bluecross_async():
     pet_urls = await collect_pet_urls()
 
     log("Scraping Blue Cross cats…")
-    log("Using MAX_WORKERS =", MAX_WORKERS)
-    log("Using REQUEST_DELAY =", REQUEST_DELAY)
+    log("Batch size =", BATCH_SIZE)
 
-    connector = aiohttp.TCPConnector(limit=MAX_WORKERS)
+    connector = aiohttp.TCPConnector(limit=BATCH_SIZE)
     async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT},
                                      connector=connector) as session:
 
-        tasks = [fetch_and_parse(session, url) for url in pet_urls]
-        results = await asyncio.gather(*tasks)
+        results = []
+        for i in range(0, len(pet_urls), BATCH_SIZE):
+            batch = pet_urls[i:i + BATCH_SIZE]
+            log(f"Fetching batch {i//BATCH_SIZE + 1} ({len(batch)} cats)…")
 
-    # Filter out None
-    return [r for r in results if r]
+            tasks = [fetch_and_parse(session, url) for url in batch]
+            batch_results = await asyncio.gather(*tasks)
+
+            results.extend([r for r in batch_results if r])
+
+    return results
 
 
 def main():
