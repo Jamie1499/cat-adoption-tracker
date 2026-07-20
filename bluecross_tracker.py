@@ -8,7 +8,6 @@ from playwright.sync_api import sync_playwright
 FILE = os.path.join(os.path.dirname(__file__), "bluecross_cats.json")
 DEBUG = os.getenv("DEBUG", "1") == "1"
 
-# Real Chrome user agent
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -69,12 +68,14 @@ def diff_cats(previous, current):
 
     return added, removed, still_here
 
+
+# PLAYWRIGHT SCRAPER (HEADLESS STEALTH)
 def fetch_rendered_html(url):
-    log("Launching Playwright (headful, anti‑bot)…")
+    log("Launching Playwright (headless stealth)…")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=False,
+            headless=True,
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--disable-web-security",
@@ -82,6 +83,9 @@ def fetch_rendered_html(url):
                 "--disable-site-isolation-trials",
                 "--disable-infobars",
                 "--window-size=1280,800",
+                "--disable-gpu",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
             ]
         )
 
@@ -96,7 +100,7 @@ def fetch_rendered_html(url):
         log("Loading Blue Cross page…")
         page.goto(url, wait_until="networkidle", timeout=60000)
 
-        # Hydrated DOM (the real one)
+        # Hydrated DOM (real rendered content)
         html = page.evaluate("() => document.documentElement.outerHTML")
 
         browser.close()
@@ -106,24 +110,20 @@ def fetch_rendered_html(url):
 def extract_cats_from_html(html):
     soup = BeautifulSoup(html, "lxml")
 
-    # Correct selector
     cards = soup.select("article.m-pet-listing-item__wrapper")
     results = []
 
     for card in cards:
-        # Correct link selector
         link = card.select_one("a.m-pet-listing-item")
         if not link:
             continue
 
         url = "https://www.bluecross.org.uk" + link["href"]
 
-        # Correct name selector
         name_tag = card.select_one("h4.m-pet-listing-item__content--title")
         name = name_tag.get_text(strip=True) if name_tag else "Unknown"
 
-        # Reserved cats are not marked in the listing grid
-        reserved = False
+        reserved = False  # Reserved cats are not marked in listing grid
 
         results.append({
             "id": url.rstrip("/"),
@@ -133,7 +133,6 @@ def extract_cats_from_html(html):
         })
 
     return results
-
 
 
 def scrape_bluecross():
@@ -151,7 +150,7 @@ def main():
     previous = load_previous()
     current = scrape_bluecross()
 
-    cats_only = current  # Only available cats
+    cats_only = current
 
     added, removed, still_here = diff_cats(previous, cats_only)
     final = added + still_here
