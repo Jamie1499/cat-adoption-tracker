@@ -16,8 +16,6 @@ DEBUG = os.getenv("DEBUG", "1") == "1"
 MAX_WORKERS = 4
 USER_AGENT = os.getenv("USER_AGENT", "catchat-tracker/1.0")
 
-MIN_RESULTS = 10  # minimum acceptable listings per site
-
 REGIONS = [
     "https://catchat.org/adopt-a-cat/buckinghamshire",
     "https://catchat.org/adopt-a-cat/hertfordshire",
@@ -25,7 +23,7 @@ REGIONS = [
 
 def log(*args):
     if DEBUG:
-        print("CatChat:", *args)
+        print(*args)
 
 def load_previous():
     if not os.path.exists(FILE):
@@ -86,12 +84,6 @@ def normalize_url(href):
 
 def parse_region(html, region_url):
     soup = BeautifulSoup(html, "lxml")
-
-    # Detect maintenance or error pages
-    if "maintenance" in html.lower() or "temporarily unavailable" in html.lower():
-        log(region_url, "→ Maintenance page detected")
-        return []
-
     cards = soup.select("div#cat")
     results = []
 
@@ -120,19 +112,15 @@ def parse_region(html, region_url):
             "region": region_url,
         })
 
-    log(region_url, f"→ parsed {len(results)} cats")
+    log(f"{region_url} → {len(results)} cats parsed")
     return results
 
 def fetch_region(session, region_url):
     try:
         r = session.get(region_url, timeout=REQUEST_TIMEOUT, allow_redirects=True)
         r.raise_for_status()
-
-        html = r.text
-        log(region_url, f"HTML length: {len(html)}")
-
-        return parse_region(html, region_url)
-
+        cats = parse_region(r.text, region_url)
+        return cats
     except Exception as e:
         log("ERROR fetching region:", region_url, e)
         return []
@@ -154,18 +142,7 @@ def scrape_catchat():
             results.extend(cats)
 
     session.close()
-
-    # Deduplicate
     unique = {c["id"]: c for c in results}
-    total = len(unique)
-
-    log("CatChat total unique cats:", total)
-
-    # HEALTH CHECK — prevent false “all removed”
-    if total < MIN_RESULTS:
-        log(f"CatChat: Suspiciously low total ({total}) — marking scraper unhealthy")
-        return []
-
     return list(unique.values())
 
 def main():

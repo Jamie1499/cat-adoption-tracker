@@ -7,25 +7,6 @@ EMAIL_PASS = os.getenv("EMAIL_PASS")
 EMAIL_TO_1 = os.getenv("EMAIL_TO_1")
 EMAIL_TO_2 = os.getenv("EMAIL_TO_2")
 
-def format_section(title, added, removed):
-    body = f"=== {title} ===\n"
-
-    # Added
-    body += f"Added ({len(added)}):\n"
-    if added:
-        body += "".join(f"- {c['name']} {c['url']}\n" for c in added)
-    else:
-        body += "None\n"
-
-    # Removed
-    body += f"\nRemoved ({len(removed)}):\n"
-    if removed:
-        body += "".join(f"- {c['name']} {c['url']}\n" for c in removed)
-    else:
-        body += "None\n"
-
-    return body + "\n\n"
-
 def send_combined_email(bc_added, bc_removed, bt_added, bt_removed, cc_added, cc_removed):
     recipients = [r for r in [EMAIL_TO_1, EMAIL_TO_2] if r]
 
@@ -35,9 +16,26 @@ def send_combined_email(bc_added, bc_removed, bt_added, bt_removed, cc_added, cc
 
     body = "Cat Adoption Tracker Update\n\n"
 
-    body += format_section("Blue Cross", bc_added, bc_removed)
-    body += format_section("Battersea", bt_added, bt_removed)
-    body += format_section("CatChat", cc_added, cc_removed)
+    # BLUE CROSS
+    body += "=== Blue Cross ===\n"
+    body += f"Added ({len(bc_added)}):\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in bc_added) or "None\n"
+    body += "\nRemoved:\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in bc_removed) or "None\n"
+
+    # BATTERSEA
+    body += "\n\n=== Battersea ===\n"
+    body += f"Added ({len(bt_added)}):\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in bt_added) or "None\n"
+    body += "\nRemoved:\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in bt_removed) or "None\n"
+
+    # CATCHAT
+    body += "\n\n=== CatChat ===\n"
+    body += f"Added ({len(cc_added)}):\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in cc_added) or "None\n"
+    body += "\nRemoved:\n"
+    body += "".join(f"- {c['name']} {c['url']}\n" for c in cc_removed) or "None\n"
 
     msg = MIMEText(body)
     msg["Subject"] = "Cat Adoption Tracker – Updates"
